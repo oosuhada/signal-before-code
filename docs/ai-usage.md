@@ -64,3 +64,13 @@ AI may help **analyze** an attempt, but it may not fabricate one. Fields such as
 `hint_free`, `revisit_success`, and `mastered` are written only from actual sessions.
 
 The default interviewer prompt remains in [`../prompts/interviewer.md`](../prompts/interviewer.md).
+
+## Embedded coach enforcement
+
+[`../scripts/coach.py`](../scripts/coach.py) turns these rules into an executable context boundary.
+Before review, the provider receives the learner-facing problem but not `expected_signal`, the
+answer-key pattern, or reference chapter sections. After the learner explicitly unlocks
+post-submission review, selected textbook sections may enter the context.
+
+The LLM conversation log is local scratch data under `.signal-before-code/`; it is not personal
+achievement evidence. See [`embedded-ai-coach.md`](embedded-ai-coach.md).

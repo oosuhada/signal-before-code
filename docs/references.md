@@ -1,4 +1,4 @@
-# References studied for v0.2 textbook build
+# References studied for the textbook and training system
 
 Research date: **2026-09-09**.
 
@@ -199,6 +199,21 @@ read-only study evidence and is **not copied**.
   (for example, Dijkstra's non-negative-edge condition) and connect variants through mutations.
 - Not copied: prose, diagrams, pseudocode, C++ snippets, or site assets. All examples and Python code
   in this repository are independently written.
+
+### Google Gen AI SDK / Vertex AI
+
+- Sources:
+  - https://docs.cloud.google.com/vertex-ai/generative-ai/docs/samples/googlegenaisdk-textgen-sys-instr-with-txt
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-5-flash
+  - https://cloud.google.com/docs/authentication/provide-credentials-adc
+- Useful: official `google-genai` client shape, system-instruction configuration, Vertex AI
+  Application Default Credentials, and current model/location support.
+- Adopted for v0.7: a small provider adapter with `gemini-3.5-flash` as the configurable default and
+  `global` as the default Vertex location.
+- Security boundary: credentials are supplied by ADC or already-exported environment variables;
+  credential values are not checked into the repository or written to coach logs.
+- Not copied: sample prose or application code. The repository-specific phase-gating and learning
+  policy are independently implemented here.
 
 ## Design conclusion from the comparison
 

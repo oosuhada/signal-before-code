@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from signal_before_code.coach import CoachSession, build_context  # noqa: E402
 from signal_before_code.learning import FAILURE_TAXONOMY, learner_ledger  # noqa: E402
 from signal_before_code.tracing import TRACE_BUILDERS, build_trace  # noqa: E402
 
@@ -572,6 +573,65 @@ def validate_interview_transfer(chapter_ids: set[str], errors: list[str]) -> int
     return len(implementations)
 
 
+def validate_embedded_coach(errors: list[str]) -> None:
+    required = [
+        "signal_before_code/coach.py",
+        "signal_before_code/google_llm.py",
+        "scripts/coach.py",
+        "docs/embedded-ai-coach.md",
+        "requirements-ai.txt",
+        ".env.example",
+        "tests/test_coach.py",
+    ]
+    for relative in required:
+        if not (ROOT / relative).exists():
+            errors.append(f"missing embedded-coach artifact: {relative}")
+
+    requirements = ROOT / "requirements-ai.txt"
+    if requirements.exists() and "google-genai" not in requirements.read_text(encoding="utf-8"):
+        errors.append("requirements-ai.txt must include google-genai")
+
+    gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+    for ignored in [".env", ".signal-before-code/"]:
+        if ignored not in gitignore:
+            errors.append(f"embedded coach requires {ignored!r} in .gitignore")
+
+    env_example = ROOT / ".env.example"
+    if env_example.exists():
+        for line in env_example.read_text(encoding="utf-8").splitlines():
+            if line.startswith(("GOOGLE_API_KEY=", "GEMINI_API_KEY=")) and line.split("=", 1)[1]:
+                errors.append(".env.example must never contain an API key value")
+
+    catalog = read_json("curriculum/problems.json", errors)
+    if catalog is None:
+        return
+    problems = catalog.get("problems")
+    if not isinstance(problems, list) or not problems:
+        return
+    first = problems[0]
+    if not isinstance(first, dict) or not isinstance(first.get("key"), str):
+        return
+
+    session = CoachSession(str(first["key"]))
+    locked = build_context(ROOT, session, user_message="What should I notice?")
+    problem_view = locked.get("problem", {})
+    if "reference" in locked:
+        errors.append("pre-attempt coach context must not contain reference metadata")
+    if isinstance(problem_view, dict) and "expected_signal" in problem_view:
+        errors.append("pre-attempt coach context leaked expected_signal")
+
+    session.commit_approach("learner-own-guess", confidence=3)
+    committed = build_context(ROOT, session, user_message="Challenge this approach")
+    if "reference" in committed:
+        errors.append("committed-approach coach context must still hide the answer key")
+
+    session.mark_submitted()
+    review = build_context(ROOT, session, user_message="Review my attempt")
+    reference = review.get("reference")
+    if not isinstance(reference, dict) or not reference.get("expected_pattern"):
+        errors.append("post-submission coach context must unlock review metadata")
+
+
 def validate_local_markdown_links(errors: list[str]) -> None:
     for markdown in ROOT.rglob("*.md"):
         if ".git" in markdown.parts:
@@ -608,6 +668,7 @@ def main() -> int:
     mutation_count, wrong_turn_count, adversarial_count = validate_boundaries(errors)
     validate_learning_engine(errors)
     java_count = validate_interview_transfer(chapter_ids, errors)
+    validate_embedded_coach(errors)
     validate_local_markdown_links(errors)
 
     if errors:
@@ -625,7 +686,7 @@ def main() -> int:
         f"{mutation_count} mutation chains, {wrong_turn_count} counterexamples, "
         f"{adversarial_count} adversarial prompts, "
         f"{java_count} Java transfer examples, 28 oral defenses, "
-        "learning engine/evidence contract and local links OK."
+        "embedded coach policy, learning engine/evidence contract and local links OK."
     )
     return 0
 

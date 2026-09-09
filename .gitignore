@@ -4,3 +4,7 @@ __pycache__/
 .ruff_cache/
 .pytest_cache/
 .DS_Store
+.env
+.env.*
+!.env.example
+.signal-before-code/

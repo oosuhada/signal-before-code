@@ -1,4 +1,4 @@
-# Roadmap — Feature Complete at v0.6
+# Roadmap — Training Infrastructure Complete at v0.7
 
 The repository has reached the intended training-system boundary. New algorithm chapters or product
 features are no longer the default source of value; actual learner evidence is.
@@ -47,7 +47,19 @@ features are no longer the default source of value; actual learner evidence is.
 - coding-test and debugging strategies;
 - verified applied case studies with “Why not another algorithm?” defenses.
 
-## After v0.6 — practice, do not manufacture mastery
+## v0.7 — Embedded AI Coach
+
+- repository-native Socratic coach/interviewer/reviewer/debugger;
+- Google Vertex AI / Gemini provider adapter;
+- safe provider diagnostics without printing credentials;
+- phase-gated context that physically excludes answer metadata before review;
+- local-only coach session logs separated from learner evidence;
+- provider-independent policy tests that run without network access.
+
+The configured Cloud target is `flai-oosuhada-20260506`. Billing/API enablement and Application
+Default Credentials remain local/Cloud configuration and are not stored in this repository.
+
+## After v0.7 — practice, do not manufacture mastery
 
 The valuable directories now are:
 
@@ -68,9 +80,10 @@ mastered
 interview passed
 ```
 
-Do not mark catalog problems as mastered because a solution exists elsewhere or because the textbook
-contains the algorithm. When a genuine gap appears during practice, improve the smallest relevant
-explanation, trace, counterexample, or test rather than restarting a feature-expansion cycle.
+Do not mark catalog problems as mastered because a solution exists elsewhere, because the textbook
+contains the algorithm, or because the embedded coach produced a good explanation. When a genuine
+gap appears during practice, improve the smallest relevant explanation, trace, counterexample,
+coach policy, or test rather than restarting a feature-expansion cycle.
 
 ## Deferred topics
 

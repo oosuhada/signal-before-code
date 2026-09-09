@@ -55,7 +55,8 @@ The textbook may be complete before I solve the problems. The personal layer may
 
 ## The full training path
 
-The repository now stops feature expansion at the point where real practice should take over:
+The repository now stops feature expansion at v0.7, where real practice can happen inside the
+repository without opening a separate general-purpose chat:
 
 ```text
 FOUNDATION
@@ -72,6 +73,9 @@ BOUNDARY
         ↓
 PRACTICE
   mixed / unseen / due / weakest
+        ↓
+COACH
+  Socratic questions → adversarial interview → gated review
         ↓
 REVIEW
   confidence calibration + spaced repetition
@@ -91,6 +95,7 @@ v0.3  See the Algorithm
 v0.4  Understand Its Boundaries
 v0.5  Train and Measure Weaknesses
 v0.6  Transfer to Interviews and Real Engineering
+v0.7  Embedded AI Coach
 ```
 
 ## How to use the book
@@ -311,6 +316,33 @@ sessions. Before a first attempt, AI may clarify wording but must not reveal the
 attempt it may act as interviewer, reviewer, adversary, counterexample generator, or problem mutator.
 See [`docs/ai-usage.md`](docs/ai-usage.md).
 
+The optional embedded coach is documented in [`docs/embedded-ai-coach.md`](docs/embedded-ai-coach.md).
+
+### Embedded AI coach
+
+The same policy can now run inside the repository instead of in a separate chat window. The Google
+provider uses the official `google-genai` SDK and supports Vertex AI with ADC, Vertex AI Express
+Mode keys, or the Gemini Developer API.
+
+```bash
+python3 -m pip install -r requirements-ai.txt
+export GOOGLE_CLOUD_PROJECT=flai-oosuhada-20260506
+export GOOGLE_CLOUD_LOCATION=global
+python3 scripts/coach.py doctor
+python3 scripts/coach.py start
+```
+
+The important control is not a prompt promise. Before review, the context builder omits the answer
+key, `expected_signal`, and reference chapter sections entirely. `/commit` lets the model challenge
+the learner's own approach while those fields remain hidden; `/review` unlocks reference context
+only after the learner says the real attempt has reached submission/review. Coach logs are ignored
+scratch data and never become `solved` or mastery evidence. Vertex AI authentication uses standard
+Application Default Credentials rather than extracting tokens or keys from another repository.
+
+The default Vertex model is `gemini-3.5-flash` in `global`; both model and backend remain
+configurable. A trusted existing env file can be passed with `--env-file`; the loader accepts only
+the documented Google/coach variables and never prints their values.
+
 ## Existing project bridges
 
 This textbook connects abstract selection rules to verified source artifacts where the analogy is
@@ -376,7 +408,8 @@ javac -d /tmp/signal-before-code-java languages/java/src/*.java
 
 The validator checks chapter sections, internal Markdown links, curriculum metadata, duplicate
 problem IDs, textbook/learner status separation, trace/mutation contracts, learning-engine fixtures,
-Java/oral-defense coverage, JSON schemas, and personal-learning templates.
+Java/oral-defense coverage, embedded-coach phase gating, JSON schemas, and personal-learning
+templates. CI also installs the optional Google Gen AI SDK and runs a no-network provider diagnostic.
 
 Start with [`docs/algorithm-selection-map.md`](docs/algorithm-selection-map.md), then pick the first
 chapter whose signals you cannot yet explain without looking.
