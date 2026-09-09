@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "signal-before-code attempt record",
+  "title": "signal-before-code learner attempt",
   "type": "object",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "required": [
     "problem_key",
     "date",
@@ -11,38 +11,47 @@
     "pattern_correct",
     "solved",
     "used_hint",
-    "failure_mode",
-    "revisit_stage"
+    "failure_modes",
+    "confidence",
+    "revisit_stage",
+    "next_review_on"
   ],
   "properties": {
     "problem_key": { "type": "string", "minLength": 1 },
     "date": { "type": "string", "format": "date" },
-    "level": {
-      "enum": ["Understand", "Recognize", "Apply", "Mixed", "Mock"]
-    },
+    "level": { "enum": ["Understand", "Recognize", "Apply", "Mixed", "Mock"] },
+    "first_impression": { "type": "string" },
+    "constraints": { "type": "string" },
+    "candidate_patterns": { "type": "array", "items": { "type": "string" } },
     "pattern_guess": { "type": "string" },
+    "confidence": { "type": "integer", "minimum": 1, "maximum": 5 },
     "pattern_correct": { "type": "boolean" },
     "solved": { "type": "boolean" },
     "used_hint": { "type": "boolean" },
-    "failure_mode": {
-      "type": ["string", "null"],
-      "enum": [
-        null,
-        "pattern_recognition",
-        "complexity",
-        "implementation",
-        "edge_case",
-        "explanation"
-      ]
+    "failure_modes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "constraint_misread",
+          "pattern_recognition_failure",
+          "wrong_algorithm",
+          "correct_algorithm_wrong_complexity",
+          "implementation_bug",
+          "edge_case_failure",
+          "off_by_one",
+          "state_definition_failure",
+          "invariant_failure",
+          "timeout",
+          "memory_limit"
+        ]
+      }
     },
-    "revisit_stage": {
-      "enum": ["day0", "day3", "day14", "day30plus"]
-    },
-    "attempt_log": {
-      "type": ["string", "null"]
-    },
-    "notes": {
-      "type": ["string", "null"]
-    }
+    "revisit_stage": { "enum": ["day0", "day3", "day14", "day30plus"] },
+    "next_review_on": { "type": "string", "format": "date" },
+    "time_to_identify_seconds": { "type": ["integer", "null"], "minimum": 0 },
+    "time_to_implement_seconds": { "type": ["integer", "null"], "minimum": 0 },
+    "wrong_turns": { "type": "string" },
+    "notes": { "type": "string" }
   }
 }

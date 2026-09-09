@@ -197,6 +197,28 @@ python3 scripts/challenge.py --mode requirement
 For rapid ambiguous classification, use the 56 synthetic prompts in
 [`practice-guides/adversarial-recognition.json`](practice-guides/adversarial-recognition.json).
 
+## Train from real weakness evidence
+
+The practice engine becomes personalized only after real attempts exist:
+
+```bash
+python3 scripts/attempt.py start
+python3 scripts/practice.py --unseen 5
+python3 scripts/practice.py --due 5
+python3 scripts/practice.py --weakest 5
+python3 scripts/practice.py --implementation 5
+python3 scripts/mock.py --duration 90 --problems 3
+python3 scripts/progress.py
+```
+
+Review priority increases for pattern-recognition failures, high-confidence wrong answers, repeated
+revisit failures, and long gaps since review. Confidence calibration compares predicted confidence
+with actual pattern correctness instead of treating confidence as achievement.
+
+If no evidence exists, the evidence-driven commands say so. The only synthetic learner data lives
+under [`fixtures/`](fixtures/demo-user.json) and is marked `"synthetic": true`; it is never merged
+into `progress/`.
+
 ## Personal learning loop
 
 The textbook is ready in advance. Evidence is earned later:

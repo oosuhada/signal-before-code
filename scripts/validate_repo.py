@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from signal_before_code.learning import FAILURE_TAXONOMY, learner_ledger  # noqa: E402
 from signal_before_code.tracing import TRACE_BUILDERS, build_trace  # noqa: E402
 
 REQUIRED_CHAPTER_HEADINGS = [
@@ -417,6 +418,65 @@ def validate_boundaries(errors: list[str]) -> tuple[int, int, int]:
     return len(chains), len(wrong_turns), len(prompts)
 
 
+def validate_learning_engine(errors: list[str]) -> None:
+    taxonomy = read_json("progress/failure-taxonomy.json", errors)
+    if taxonomy is not None:
+        modes = taxonomy.get("failure_modes")
+        if not isinstance(modes, list) or set(modes) != FAILURE_TAXONOMY:
+            errors.append("progress/failure-taxonomy.json does not match the learning engine")
+
+    fixture = read_json("fixtures/demo-user.json", errors)
+    if fixture is not None and fixture.get("synthetic") is not True:
+        errors.append("fixtures/demo-user.json must be explicitly marked synthetic")
+
+    for relative in [
+        "scripts/attempt.py",
+        "scripts/mock.py",
+        "scripts/practice.py",
+        "scripts/progress.py",
+    ]:
+        if not (ROOT / relative).exists():
+            errors.append(f"missing learning engine CLI: {relative}")
+
+    attempts_path = ROOT / "progress" / "attempts.jsonl"
+    status = read_json("progress/learner-status.json", errors)
+    if status is None:
+        return
+    records: list[dict[str, object]] = []
+    if attempts_path.exists():
+        for line_number, line in enumerate(
+            attempts_path.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as error:
+                errors.append(f"progress/attempts.jsonl:{line_number}: invalid JSON: {error.msg}")
+                continue
+            if isinstance(record, dict):
+                records.append(record)
+            else:
+                errors.append(f"progress/attempts.jsonl:{line_number}: record must be an object")
+
+    derived = learner_ledger(records, status)
+    counters = [
+        "attempted",
+        "solved",
+        "solved_without_hint",
+        "correct_pattern_identified",
+        "pattern_recognition_failures",
+        "implementation_failures",
+        "revisit_successes",
+    ]
+    for counter in counters:
+        if status.get(counter) != derived[counter]:
+            errors.append(
+                f"learner-status {counter}={status.get(counter)!r} disagrees with real attempts "
+                f"({derived[counter]})"
+            )
+
+
 def validate_local_markdown_links(errors: list[str]) -> None:
     for markdown in ROOT.rglob("*.md"):
         if ".git" in markdown.parts:
@@ -451,6 +511,7 @@ def main() -> int:
     validate_personal_templates(errors)
     validate_visual_traces(errors)
     mutation_count, wrong_turn_count, adversarial_count = validate_boundaries(errors)
+    validate_learning_engine(errors)
     validate_local_markdown_links(errors)
 
     if errors:
@@ -467,7 +528,7 @@ def main() -> int:
         f"{len(REQUIRED_TRACES)} core visual traces, "
         f"{mutation_count} mutation chains, {wrong_turn_count} counterexamples, "
         f"{adversarial_count} adversarial prompts, "
-        "learner evidence contract and local links OK."
+        "learning engine/evidence contract and local links OK."
     )
     return 0
 

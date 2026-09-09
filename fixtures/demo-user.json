@@ -1,0 +1,28 @@
+{
+  "synthetic": true,
+  "purpose": "Unit-test/example input only. This file is not personal learner evidence.",
+  "attempts": [
+    {
+      "problem_key": "leetcode-217",
+      "date": "2026-01-01",
+      "confidence": 5,
+      "pattern_correct": false,
+      "solved": false,
+      "used_hint": false,
+      "failure_modes": ["pattern_recognition_failure"],
+      "revisit_stage": "day0",
+      "next_review_on": "2026-01-02"
+    },
+    {
+      "problem_key": "leetcode-125",
+      "date": "2026-01-01",
+      "confidence": 2,
+      "pattern_correct": true,
+      "solved": true,
+      "used_hint": false,
+      "failure_modes": [],
+      "revisit_stage": "day0",
+      "next_review_on": "2026-01-04"
+    }
+  ]
+}

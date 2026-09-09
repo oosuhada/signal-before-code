@@ -1,0 +1,16 @@
+{
+  "version": "0.5",
+  "failure_modes": [
+    "constraint_misread",
+    "pattern_recognition_failure",
+    "wrong_algorithm",
+    "correct_algorithm_wrong_complexity",
+    "implementation_bug",
+    "edge_case_failure",
+    "off_by_one",
+    "state_definition_failure",
+    "invariant_failure",
+    "timeout",
+    "memory_limit"
+  ]
+}
