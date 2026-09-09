@@ -4,6 +4,17 @@ These links were checked against the repositories' remote default branches on 20
 means “this real artifact raises the same decision question,” not “the production system literally
 uses the interview implementation.”
 
+Verification snapshot (remote `main`, checked with authenticated `gh api`):
+
+| Artifact | Blob SHA |
+| --- | --- |
+| `beneath-the-stack/include/bts/min_heap.hpp` | `fcb674c76c2a1de42374a46094bf474dc9dd436d` |
+| `beneath-the-stack/include/bts/graph.hpp` | `f65aa3c4f0feea62c8ea56616635bdf08079c6a1` |
+| `elevator-queue-lab/app/dispatch.py` | `e7404f94dac5a8bba78819f85adedfc6356aa3cd` |
+| `dev-flow-dashboard/frontend/src/graphModel.ts` | `f44bf41727de15d8816b1df666b6a7c3118a7f37` |
+| `browser-reliability-runtime/src/local-llm/queue.ts` | `4cabba6324b5c67d936a119d72e8958f782951d4` |
+| `AskOosu/src/lib/rag/search-cache.ts` | `0f5f71059d6ab16f810d853551e5909eb77369fd` |
+
 ## Array & Hash → AskOosu cache keys
 
 - Artifact: [`AskOosu/src/lib/rag/search-cache.ts`](https://github.com/oosuhada/AskOosu/blob/main/src/lib/rag/search-cache.ts)
@@ -16,7 +27,7 @@ uses the interview implementation.”
 ## Two Pointers → no forced product bridge yet
 
 No current portfolio artifact was verified as a meaningful two-pointer algorithm use case during the
-v0.1 audit.
+v0.2 audit.
 
 That absence is intentional evidence too: do not keyword-search a codebase for two indexes and call
 it an algorithm application. Add a bridge later only when the same monotonic boundary-elimination
@@ -37,7 +48,7 @@ reasoning actually appears.
 `beneath-the-stack` already records binary-search selection reasoning in
 [`docs/algorithm-defense.md`](https://github.com/oosuhada/beneath-the-stack/blob/main/docs/algorithm-defense.md).
 
-No v0.1 product artifact is labeled “binary search application” merely because a framework or
+No product artifact is labeled “binary search application” merely because a framework or
 database may perform one internally. A future bridge should point to an explicit product decision.
 
 ## Heap / Priority Queue → benchmark and counterexample
@@ -70,12 +81,28 @@ This is the repository's `When NOT to use it` philosophy in real code.
 `dev-flow-dashboard` constructs dependency/downstream adjacency and traverses downstream PRs with a
 queue plus a visited set. It is a real graph traversal use case.
 
-Important non-claim: the current artifact is **not** a topological-sort implementation. It models PR
-dependencies and downstream reachability; a future Topological Sort chapter may use the same product
-domain as a motivating scenario only if ordering/cycle requirements are implemented and verified.
+Important non-claim: the current artifact is **not** a topological-sort implementation. The textbook
+Topological Sort chapter uses the same dependency domain as a conceptual bridge, but this file does
+not claim the production project currently performs Kahn's algorithm.
 
-## Future storage bridge → B+ tree
+## Topological Sort → PR dependency domain, not implementation claim
+
+- Artifact: [`dev-flow-dashboard/frontend/src/graphModel.ts`](https://github.com/oosuhada/dev-flow-dashboard/blob/main/frontend/src/graphModel.ts)
+- Verified behavior: builds directed dependency/downstream relationships and traverses downstream
+  nodes.
+- Selection lesson: dependency direction is real product state; if the product needed a valid merge
+  sequence over a DAG, topological ordering would be the relevant algorithm family.
+- Boundary: current source is traversal/ranking logic, **not** evidence that topo sort is deployed.
+
+## Graph / queue state → browser reliability runtime
+
+The file-backed queue in
+[`browser-reliability-runtime/src/local-llm/queue.ts`](https://github.com/oosuhada/browser-reliability-runtime/blob/main/src/local-llm/queue.ts)
+also demonstrates why algorithm names do not fully specify production semantics: queue order is only
+one concern alongside bounded capacity, atomic ownership, durability, and recovery.
+
+## Storage bridge → B+ tree remains outside interview curriculum
 
 `beneath-the-stack` already has a B+ tree and page/storage experiments, but B+ tree is outside the
-v0.1 interview-pattern curriculum. Keep it as a future “internal mechanism ↔ selection” bridge rather
-than expanding the current scope.
+current 28-chapter interview-pattern curriculum. Keep it as an “internal mechanism ↔ selection”
+bridge rather than expanding this textbook into a database-internals catalog.

@@ -1,61 +1,42 @@
-# Progress and mastery records
+# Personal learner progress
 
-This directory tracks **selection quality**, not a solved-count leaderboard.
+This directory is an **evidence ledger**, not a textbook completion tracker.
 
-## Two layers of record
+The 28 textbook chapters can all be complete while every learner metric here remains zero.
 
-1. Rich reasoning lives in a copy of [`../attempts/TEMPLATE.md`](../attempts/TEMPLATE.md).
-2. A compact JSON Lines record can be appended to `progress/attempts.jsonl` after the session so
-   aggregate metrics can be calculated.
+## Files
 
-No `attempts.jsonl` file is committed in v0.1 because there are no real attempts yet. Create it with
-one JSON object per line when the first session happens.
+- [`learner-status.json`](learner-status.json) — aggregate personal evidence; initially all zero.
+- [`schema.json`](schema.json) — schema for one actual attempt record.
+- [`revisits.csv`](revisits.csv) — scheduled revisit ledger; header only until a real solve occurs.
 
-The allowed record shape is described in [`schema.json`](schema.json).
+Attempt records may be appended to `attempts.jsonl` later. The repository intentionally does not
+ship a fake starter record.
 
-Example shape **for documentation only — do not paste it as fake progress**:
-
-```text
-problem_key: platform-id
-date: YYYY-MM-DD
-level: Understand | Recognize | Apply | Mixed | Mock
-pattern_guess: what I wrote before implementation
-pattern_correct: true | false
-solved: true | false
-used_hint: true | false
-failure_mode: null | pattern_recognition | complexity | implementation | edge_case | explanation
-revisit_stage: day0 | day3 | day14 | day30plus
-```
-
-## Summary command
-
-```bash
-python scripts/progress.py
-```
-
-It reports:
-
-- attempted records;
-- solved without hint;
-- correct pattern identified;
-- implementation failures;
-- pattern-recognition failures;
-- pattern-recognition rate;
-- hint-free solve rate;
-- revisit success rate.
-
-Missing data is shown as `n/a`; the script does not invent zero-denominator percentages.
-
-## Revisit queue
-
-[`revisits.csv`](revisits.csv) is intentionally a plain CSV. Add a row only after a real Day 0
-attempt.
-
-Recommended schedule:
+## Metrics
 
 ```text
-Day 0  → first solve
-Day 3  → no previous code
-Day 14 → mixed set
-Day 30+ → explain from scratch, then implement
+Attempted
+Solved
+Solved without hint
+Correct pattern identified
+Pattern-recognition failure
+Implementation failure
+Revisit success
+Timed mocks completed
 ```
+
+Rates are undefined (`n/a`) before the denominator exists. Zero attempts is not a 0% recognition
+rate; there has been no evidence yet.
+
+## Evidence rule
+
+Do not update a success field because:
+
+- the textbook contains a solution;
+- the same problem exists in `codetest-study`;
+- AI explained the algorithm;
+- a judge solution was read without a fresh attempt.
+
+Update it only after an actual session described by [`../attempts/TEMPLATE.md`](../attempts/TEMPLATE.md)
+or [`../revisits/TEMPLATE.md`](../revisits/TEMPLATE.md).

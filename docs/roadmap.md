@@ -1,69 +1,48 @@
-# Roadmap
+# Roadmap after v0.2
 
-The roadmap is intentionally smaller than a complete algorithm catalog. A chapter advances because
-real solving sessions create evidence, not because a generator can write plausible prose.
+v0.2 changes the repository contract: the textbook is intentionally complete before personal study.
+Future work should improve evidence and explanations rather than inflate topic count by default.
 
-## v0.1 — selection scaffold
+## v0.2 — textbook complete, learner evidence empty
 
-- repository concept and naming;
-- learning methodology;
-- AI interviewer/reviewer contract;
-- progress and revisit schema;
-- seven-pattern curriculum surface;
-- full seed chapters for Array & Hash, Two Pointers, and BFS / DFS;
-- curated 30–50 problem pool without copied statements;
-- mixed-practice foundation;
-- timed-mock template;
-- small tested Python reference implementations for seed chapters;
-- lightweight CI and repository validation.
+- 28 intuition-first chapters complete;
+- constraint/complexity guides;
+- algorithm selection map;
+- neighboring-pattern comparisons;
+- wrong-turn library;
+- mutation atlas;
+- 168-problem curated roadmap with review-only answer metadata;
+- recognition quiz and flash drill;
+- personal attempt/revisit/mixed/mock templates;
+- CI that validates textbook and learner-layer separation.
 
-## v0.2 candidates
+## v0.3 — personal evidence begins
 
-Only promote these when actual study reaches them:
+Only actual sessions can create these artifacts:
 
-- Trees;
-- Backtracking;
-- Graph patterns beyond basic BFS / DFS;
-- Union-Find;
-- Topological Sort;
-- Shortest Path;
-- Greedy;
-- Dynamic Programming.
+- first-attempt logs;
+- hint-free results;
+- pattern-recognition failures;
+- implementation failures;
+- Day 3 / Day 14 / Day 30+ revisit results;
+- mixed-set classification scores;
+- timed mock reports.
 
-Existing artifacts can provide bridges when relevant:
+No migration should mark historical catalog problems as solved merely because solution code exists in
+another repository. If old submission history is linked, it remains historical context until a
+`signal-before-code` evidence session explicitly records what was reconstructed.
 
-- `beneath-the-stack` already has union-find, heap, BFS/DFS, B+ tree, scheduler, and algorithm-defense
-  evidence;
-- `dev-flow-dashboard` contains a real PR dependency graph;
-- `browser-reliability-runtime` contains queue ownership/backpressure behavior;
-- `elevator-queue-lab` is useful both as a scheduling example and as evidence for when a heap is not
-  automatically worthwhile.
+## Possible textbook extensions
 
-Those artifacts should be linked, not recopied.
+Add only when the current 28 chapters expose a real gap:
 
-## Later: mixed and timed interview mode
+- 0-1 BFS;
+- Bellman-Ford / negative-edge shortest path;
+- minimum spanning tree / Kruskal;
+- Fenwick tree / segment tree;
+- strongly connected components;
+- advanced DAG DP;
+- meet-in-the-middle;
+- string matching.
 
-After the first pattern set has real attempt history:
-
-```text
-90 minutes
-3 problems
-no AI
-no pattern labels
-explain before code
-```
-
-The first version needs only Markdown records. Build an app only if repeated use demonstrates a real
-workflow problem that files and scripts cannot solve.
-
-## Language progression
-
-```text
-first ~100 selected problems
-→ Python for reasoning speed
-
-representative solved problems
-→ Java reimplementation for syntax/type discipline
-```
-
-Do not duplicate every solution in both languages by default.
+These should enter as mutation-derived needs, not as a race toward a larger catalog.

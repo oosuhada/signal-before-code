@@ -1,158 +1,314 @@
 #!/usr/bin/env python3
-"""Validate the lightweight learning-repository contract without external services."""
+"""Validate the textbook contract and keep learner evidence separate from generated content."""
 
 from __future__ import annotations
 
 import csv
 import json
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 
-PATTERNS = {
-    "01-array-hash": "seed",
-    "02-two-pointers": "seed",
-    "03-sliding-window": "scaffold",
-    "04-stack-queue": "scaffold",
-    "05-binary-search": "scaffold",
-    "06-heap-priority-queue": "scaffold",
-    "07-bfs-dfs": "seed",
-}
-
-REQUIRED_SEED_HEADINGS = [
-    "## 1. The Situation",
-    "## 2. First Naive Idea",
-    "## 3. Why It Breaks",
-    "## 4. Signal to Notice",
-    "## 5. Candidate Approaches",
-    "## 6. Why This Pattern",
-    "## 7. Walkthrough",
+REQUIRED_CHAPTER_HEADINGS = [
+    "## 1. What problem shape does this solve?",
+    "## 2. Signals to notice",
+    "## 3. Naive idea",
+    "## 4. Why the naive idea breaks",
+    "## 5. Core intuition",
+    "## 6. Invariant",
+    "## 7. Step-by-step walkthrough",
     "## 8. Implementation",
     "## 9. Complexity",
-    "## 10. When NOT to Use It",
-    "## 11. Mutation",
-    "## 12. Practice",
+    "## 10. Common mistakes",
+    "## 11. When NOT to use it",
+    "## 12. Neighboring patterns",
+    "## 13. Mutation ladder",
+    "## 14. Practice ladder",
 ]
 
-ALLOWED_LEVELS = {"Understand", "Recognize", "Apply"}
+ALLOWED_STAGES = {"Understand", "Recognize", "Apply"}
+ALLOWED_DIFFICULTIES = {"intro", "intermediate", "advanced"}
 EXPECTED_HOSTS = {
     "LeetCode": "leetcode.com",
     "Programmers": "school.programmers.co.kr",
     "Baekjoon": "www.acmicpc.net",
 }
-
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
+PYTHON_FENCE = re.compile(r"```python\n(.*?)```", re.DOTALL)
 
 
-def validate_chapters(errors: list[str]) -> None:
-    for pattern, state in PATTERNS.items():
-        chapter = ROOT / "patterns" / pattern / "README.md"
-        if not chapter.exists():
-            errors.append(f"missing chapter: {chapter.relative_to(ROOT)}")
-            continue
-        text = chapter.read_text(encoding="utf-8")
-        if state == "seed":
-            for heading in REQUIRED_SEED_HEADINGS:
-                if heading not in text:
-                    errors.append(f"{chapter.relative_to(ROOT)} missing heading {heading!r}")
-        elif "scaffold only" not in text.lower():
-            errors.append(f"{chapter.relative_to(ROOT)} must explicitly remain scaffold only")
-
-
-def validate_problem_catalog(errors: list[str]) -> int:
-    path = ROOT / "curriculum" / "problems.json"
+def read_json(relative: str, errors: list[str]) -> dict[str, object] | None:
+    path = ROOT / relative
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        errors.append(f"cannot parse curriculum/problems.json: {error}")
-        return 0
+        errors.append(f"{relative}: invalid JSON: {error}")
+        return None
+    if not isinstance(value, dict):
+        errors.append(f"{relative}: root must be an object")
+        return None
+    return value
 
-    problems = data.get("problems")
+
+def load_chapters(errors: list[str]) -> list[dict[str, str]]:
+    data = read_json("curriculum/chapters.json", errors)
+    if data is None:
+        return []
+    chapters = data.get("chapters")
+    if not isinstance(chapters, list):
+        errors.append("curriculum/chapters.json: chapters must be a list")
+        return []
+    if len(chapters) != 28:
+        errors.append(f"expected 28 textbook chapters, found {len(chapters)}")
+
+    ids: set[str] = set()
+    typed: list[dict[str, str]] = []
+    for index, chapter in enumerate(chapters):
+        if not isinstance(chapter, dict):
+            errors.append(f"chapter[{index}] must be an object")
+            continue
+        chapter_id = chapter.get("id")
+        if not isinstance(chapter_id, str) or not chapter_id:
+            errors.append(f"chapter[{index}] missing id")
+            continue
+        if chapter_id in ids:
+            errors.append(f"duplicate chapter id: {chapter_id}")
+        ids.add(chapter_id)
+        if chapter.get("chapter_status") != "textbook_complete":
+            errors.append(f"{chapter_id}: chapter_status must be textbook_complete")
+        if chapter.get("learner_status") not in {
+            "not_started",
+            "in_progress",
+            "revisiting",
+            "mastered",
+        }:
+            errors.append(f"{chapter_id}: invalid learner_status")
+        typed.append({key: str(value) for key, value in chapter.items()})
+    return typed
+
+
+def validate_chapters(chapters: list[dict[str, str]], errors: list[str]) -> None:
+    chapter_ids = {chapter["id"] for chapter in chapters}
+    found_dirs = {
+        path.parent.name for path in (ROOT / "patterns").glob("*/README.md") if path.is_file()
+    }
+    if found_dirs != chapter_ids:
+        missing = sorted(chapter_ids - found_dirs)
+        extra = sorted(found_dirs - chapter_ids)
+        if missing:
+            errors.append(f"pattern directories missing: {missing}")
+        if extra:
+            errors.append(f"unregistered pattern directories: {extra}")
+
+    for chapter_id in sorted(chapter_ids):
+        path = ROOT / "patterns" / chapter_id / "README.md"
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for heading in REQUIRED_CHAPTER_HEADINGS:
+            if heading not in text:
+                errors.append(f"{path.relative_to(ROOT)} missing heading {heading!r}")
+        if "scaffold only" in text.lower():
+            errors.append(f"{path.relative_to(ROOT)} still claims scaffold-only state")
+        if len(text.splitlines()) < 70:
+            errors.append(f"{path.relative_to(ROOT)} is too thin for textbook_complete")
+
+
+def validate_python_fences(errors: list[str]) -> int:
+    compiled = 0
+    for markdown in sorted((ROOT / "patterns").glob("*/README.md")):
+        text = markdown.read_text(encoding="utf-8")
+        for index, snippet in enumerate(PYTHON_FENCE.findall(text), start=1):
+            try:
+                compile(snippet, f"{markdown.relative_to(ROOT)}#python-{index}", "exec")
+            except SyntaxError as error:
+                errors.append(
+                    f"{markdown.relative_to(ROOT)} python fence {index} has syntax error: {error}"
+                )
+            compiled += 1
+    return compiled
+
+
+def validate_problem_catalog(
+    chapter_ids: set[str], errors: list[str]
+) -> tuple[int, dict[str, str], dict[str, list[str]]]:
+    catalog = read_json("curriculum/problems.json", errors)
+    answers = read_json("curriculum/answer-key.json", errors)
+    if catalog is None or answers is None:
+        return 0, {}, {}
+
+    problems = catalog.get("problems")
+    mapping = answers.get("expected_pattern")
     if not isinstance(problems, list):
         errors.append("curriculum/problems.json: problems must be a list")
-        return 0
+        return 0, {}, {}
+    if not isinstance(mapping, dict):
+        errors.append("curriculum/answer-key.json: expected_pattern must be an object")
+        return len(problems), {}, {}
 
-    if not 30 <= len(problems) <= 50:
-        errors.append(f"v0.1 problem pool should contain 30-50 entries, found {len(problems)}")
+    if not 150 <= len(problems) <= 200:
+        errors.append(f"curated roadmap should contain 150-200 problems, found {len(problems)}")
 
-    keys: set[str] = set()
-    counts: Counter[str] = Counter()
     required = {
         "key",
         "platform",
         "id",
         "title",
         "url",
-        "pattern",
-        "level",
+        "difficulty",
+        "stage",
         "abstract",
-        "selection_question",
+        "expected_signal",
     }
+    forbidden = {"pattern", "expected_pattern", "chapter"}
+    seen_keys: set[str] = set()
+    seen_problem_ids: set[tuple[str, str]] = set()
+    stages_by_chapter: dict[str, list[str]] = defaultdict(list)
 
     for index, problem in enumerate(problems):
         label = f"problem[{index}]"
         if not isinstance(problem, dict):
             errors.append(f"{label} must be an object")
             continue
-
         missing = required - problem.keys()
         if missing:
             errors.append(f"{label} missing keys: {sorted(missing)}")
             continue
+        leaked = forbidden & problem.keys()
+        if leaked:
+            errors.append(f"{label} leaks review-only fields: {sorted(leaked)}")
 
-        key = problem["key"]
-        if key in keys:
+        key = str(problem["key"])
+        if key in seen_keys:
             errors.append(f"duplicate problem key: {key}")
-        keys.add(key)
+        seen_keys.add(key)
 
-        pattern = problem["pattern"]
-        if pattern not in PATTERNS:
-            errors.append(f"{key}: unknown pattern {pattern}")
-        counts[pattern] += 1
+        platform = str(problem["platform"])
+        problem_id = str(problem["id"])
+        pair = (platform, problem_id)
+        if pair in seen_problem_ids:
+            errors.append(f"duplicate problem id: {platform} {problem_id}")
+        seen_problem_ids.add(pair)
 
-        if problem["level"] not in ALLOWED_LEVELS:
-            errors.append(f"{key}: invalid level {problem['level']}")
+        stage = problem["stage"]
+        if stage not in ALLOWED_STAGES:
+            errors.append(f"{key}: invalid stage {stage}")
+        if problem["difficulty"] not in ALLOWED_DIFFICULTIES:
+            errors.append(f"{key}: invalid difficulty {problem['difficulty']}")
 
-        platform = problem["platform"]
         expected_host = EXPECTED_HOSTS.get(platform)
-        actual_host = urlparse(problem["url"]).netloc
+        actual_host = urlparse(str(problem["url"])).netloc
         if expected_host is None:
             errors.append(f"{key}: unsupported platform {platform}")
         elif actual_host != expected_host:
             errors.append(f"{key}: URL host {actual_host} does not match {expected_host}")
 
-        if len(problem["abstract"]) > 240:
-            errors.append(f"{key}: abstract is too long; keep it original and compact")
+        if len(str(problem["abstract"])) > 240:
+            errors.append(f"{key}: abstract is too long; keep learner-facing summaries compact")
 
-    for pattern in PATTERNS:
-        if counts[pattern] < 5:
+        chapter = mapping.get(key)
+        if chapter not in chapter_ids:
+            errors.append(f"{key}: answer key points to unknown chapter {chapter!r}")
+        elif isinstance(stage, str):
+            stages_by_chapter[str(chapter)].append(stage)
+
+    answer_keys = set(mapping)
+    if answer_keys != seen_keys:
+        missing_answers = sorted(seen_keys - answer_keys)
+        extra_answers = sorted(answer_keys - seen_keys)
+        if missing_answers:
+            errors.append(f"problem keys missing answer metadata: {missing_answers}")
+        if extra_answers:
+            errors.append(f"answer metadata without learner-facing problem: {extra_answers}")
+
+    for chapter_id in sorted(chapter_ids):
+        stages = stages_by_chapter.get(chapter_id, [])
+        if len(stages) < 6:
             errors.append(
-                f"{pattern}: expected at least 5 curated problems, found {counts[pattern]}"
+                f"{chapter_id}: expected at least 6 curated problems, found {len(stages)}"
             )
+        counts = Counter(stages)
+        for stage in ALLOWED_STAGES:
+            if counts[stage] < 2:
+                errors.append(f"{chapter_id}: expected at least 2 {stage} problems")
 
-    return len(problems)
+    typed_mapping = {str(key): str(value) for key, value in mapping.items()}
+    return len(problems), typed_mapping, stages_by_chapter
 
 
-def validate_json_files(errors: list[str]) -> None:
-    for relative in ["progress/schema.json", "curriculum/problems.json"]:
-        path = ROOT / relative
-        try:
-            json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as error:
-            errors.append(f"{relative}: invalid JSON: {error}")
+def validate_learner_status(chapter_ids: set[str], errors: list[str]) -> None:
+    data = read_json("progress/learner-status.json", errors)
+    if data is None:
+        return
+    counters = [
+        "attempted",
+        "solved",
+        "solved_without_hint",
+        "correct_pattern_identified",
+        "pattern_recognition_failures",
+        "implementation_failures",
+        "revisit_successes",
+        "timed_mocks_completed",
+    ]
+    for name in counters:
+        value = data.get(name)
+        if not isinstance(value, int) or value < 0:
+            errors.append(f"progress/learner-status.json: {name} must be a non-negative integer")
+
+    attempted = data.get("attempted", 0)
+    solved = data.get("solved", 0)
+    hint_free = data.get("solved_without_hint", 0)
+    if isinstance(attempted, int) and isinstance(solved, int) and solved > attempted:
+        errors.append("learner status cannot have solved > attempted")
+    if isinstance(solved, int) and isinstance(hint_free, int) and hint_free > solved:
+        errors.append("learner status cannot have solved_without_hint > solved")
+
+    mastered = data.get("mastered_problem_keys")
+    if not isinstance(mastered, list):
+        errors.append("learner status mastered_problem_keys must be a list")
+    chapter_mastery = data.get("chapter_mastery")
+    if not isinstance(chapter_mastery, dict):
+        errors.append("learner status chapter_mastery must be an object")
+    elif set(chapter_mastery) - chapter_ids:
+        errors.append("learner status contains unknown chapter mastery keys")
+
+    if attempted == 0:
+        nonzero = [name for name in counters[1:] if data.get(name) != 0]
+        if nonzero:
+            errors.append(f"zero-attempt ledger cannot contain achievement counters: {nonzero}")
+        if mastered:
+            errors.append("zero-attempt ledger cannot contain mastered problems")
+        if chapter_mastery:
+            errors.append("zero-attempt ledger cannot contain chapter mastery claims")
 
 
 def validate_revisit_csv(errors: list[str]) -> None:
-    path = ROOT / "progress" / "revisits.csv"
-    with path.open(encoding="utf-8", newline="") as handle:
-        reader = csv.reader(handle)
-        header = next(reader, [])
+    path = ROOT / "progress/revisits.csv"
+    try:
+        with path.open(encoding="utf-8", newline="") as handle:
+            header = next(csv.reader(handle), [])
+    except OSError as error:
+        errors.append(f"cannot read progress/revisits.csv: {error}")
+        return
     expected = ["problem_key", "first_solved_on", "due_on", "stage", "status"]
     if header != expected:
         errors.append(f"progress/revisits.csv header must be {expected}, found {header}")
+
+
+def validate_personal_templates(errors: list[str]) -> None:
+    required = [
+        "attempts/TEMPLATE.md",
+        "revisits/TEMPLATE.md",
+        "mixed/TEMPLATE.md",
+        "mocks/TEMPLATE.md",
+    ]
+    for relative in required:
+        path = ROOT / relative
+        if not path.exists():
+            errors.append(f"missing personal learning template: {relative}")
 
 
 def validate_local_markdown_links(errors: list[str]) -> None:
@@ -178,10 +334,15 @@ def validate_local_markdown_links(errors: list[str]) -> None:
 
 def main() -> int:
     errors: list[str] = []
-    validate_chapters(errors)
-    problem_count = validate_problem_catalog(errors)
-    validate_json_files(errors)
+    chapters = load_chapters(errors)
+    chapter_ids = {chapter["id"] for chapter in chapters}
+    validate_chapters(chapters, errors)
+    python_fences = validate_python_fences(errors)
+    problem_count, _, _ = validate_problem_catalog(chapter_ids, errors)
+    validate_learner_status(chapter_ids, errors)
+    read_json("progress/schema.json", errors)
     validate_revisit_csv(errors)
+    validate_personal_templates(errors)
     validate_local_markdown_links(errors)
 
     if errors:
@@ -192,7 +353,10 @@ def main() -> int:
 
     print(
         "Repository validation passed: "
-        f"{len(PATTERNS)} pattern chapters, {problem_count} curated problems, local links OK."
+        f"{len(chapters)} textbook-complete chapters, "
+        f"{problem_count} curated problems, "
+        f"{python_fences} chapter Python examples compiled, "
+        "learner evidence contract and local links OK."
     )
     return 0
 

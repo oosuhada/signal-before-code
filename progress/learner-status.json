@@ -1,0 +1,14 @@
+{
+  "version": "0.2",
+  "policy": "Only update these values from actual personal problem-solving evidence.",
+  "attempted": 0,
+  "solved": 0,
+  "solved_without_hint": 0,
+  "correct_pattern_identified": 0,
+  "pattern_recognition_failures": 0,
+  "implementation_failures": 0,
+  "revisit_successes": 0,
+  "timed_mocks_completed": 0,
+  "mastered_problem_keys": [],
+  "chapter_mastery": {}
+}

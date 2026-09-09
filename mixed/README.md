@@ -1,19 +1,18 @@
-# Mixed mode
+# Personal Mixed Sessions
 
-Pattern folders reveal the category before the problem starts. Mixed mode removes that hint.
+This folder stores **actual unlabeled classification sessions**, not pre-generated achievements.
 
-Rules:
+For ready-made textbook drills, use [`../practice-guides/recognition-quiz.md`](../practice-guides/recognition-quiz.md)
+or run `python3 scripts/practice.py --mixed 6`.
 
-1. Open a set without opening its `review/` counterpart.
-2. For each problem, write constraints and candidate approaches before a pattern name.
-3. Do not use AI until a first approach is recorded.
-4. After solving or timing out, open the review file and compare the **signal**, not only the final
-   algorithm label.
-5. Record a pattern-recognition failure separately from an implementation failure.
+When a real session begins, copy [`TEMPLATE.md`](TEMPLATE.md). Do not write the expected pattern into
+the question section. Only reveal review metadata after committing to a classification.
 
-Available foundation:
+Recommended progression:
 
-- [`set-01.md`](set-01.md) — six problems drawn only from the three v0.1 seed chapters; labels hidden.
-
-Mixed sets should eventually contain neighboring patterns that are easy to confuse. Do not generate
-dozens of sets before the corresponding chapters have real attempt history.
+```text
+chapter practice
+→ mixed 6 problems, untimed
+→ mixed 6 problems, classification time recorded
+→ timed mock with no category labels
+```

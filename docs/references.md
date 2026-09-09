@@ -1,4 +1,4 @@
-# References studied for v0.1
+# References studied for v0.2 textbook build
 
 Research date: **2026-09-09**.
 
@@ -57,7 +57,7 @@ statements.
 
 ## Classmate / peer practice repositories
 
-No peer repository below exposed a license during the v0.1 review. Their code is therefore treated as
+No peer repository below exposed a license during the v0.2 review. Their code is therefore treated as
 read-only study evidence and is **not copied**.
 
 ### `woovii000/CodingTest`
@@ -172,8 +172,8 @@ read-only study evidence and is **not copied**.
 - License observed: **MIT**.
 - Useful: broad Python reference catalog and strong emphasis on implementation coverage.
 - Adopted idea: tested Python implementations are useful references after understanding.
-- Deliberately not adopted: catalog scale. v0.1 should remain small enough that every completed
-  chapter corresponds to real study.
+- Deliberately not adopted: catalog scale and code-first browsing. This textbook remains a curated
+  selection guide rather than a comprehensive implementation encyclopedia.
 - Not copied: implementation code.
 
 ### USACO Guide
@@ -186,6 +186,19 @@ read-only study evidence and is **not copied**.
 - Not copied: lesson text, editorials, implementations, problem statements, or site components. The
   guide's own usage notes restrict reproducing/redistributing site content without permission, so
   this repository only links and records the structural lesson.
+
+### CP-Algorithms
+
+- Source: https://github.com/cp-algorithms/cp-algorithms
+- License observed: **CC BY-SA 4.0**.
+- Verified topic coverage on 2026-09-09 includes dedicated material for BFS, Dijkstra, topological
+  sort, disjoint-set union, knapsack, and bit manipulation.
+- Useful: concise intermediate/competitive-programming references that make preconditions and
+  complexity explicit.
+- Adopted idea: advanced chapters should state the exact assumption that makes the algorithm valid
+  (for example, Dijkstra's non-negative-edge condition) and connect variants through mutations.
+- Not copied: prose, diagrams, pseudocode, C++ snippets, or site assets. All examples and Python code
+  in this repository are independently written.
 
 ## Design conclusion from the comparison
 

@@ -1,83 +1,66 @@
-# AI usage rule
+# AI usage: textbook authoring vs personal evidence
 
-AI is allowed in this repository only when it preserves the part of the task I am trying to train.
+This repository deliberately allows different AI policies for its two layers.
 
-The target skill is **algorithm selection under uncertainty**. If AI reveals the pattern before I
-have formed candidates, it has removed the training stimulus.
+## Textbook layer
 
-## Before the first attempt
+AI assistance is allowed for:
+
+- chapter explanations and examples;
+- algorithm comparisons;
+- counterexamples and wrong-turn analysis;
+- mutation ladders;
+- practice curation metadata;
+- Python reference examples;
+- structural review and validation tooling.
+
+The textbook is **AI-assisted and source-referenced educational content**. External sources are
+recorded in [`references.md`](references.md); their code/prose is not copied into the repository.
+
+## Personal learning layer
+
+The policy is stricter because this layer is evidence of my own performance.
+
+### Before first attempt
 
 AI may:
 
 - clarify ambiguous wording;
-- restate input/output in neutral terms;
-- ask me what constraints seem important.
+- restate input/output format;
+- ask what constraints I notice.
 
 AI must not:
 
-- name the intended algorithm or pattern;
-- provide solution code or pseudocode;
-- rank candidate algorithms for me;
-- reveal a key invariant or hidden trick;
-- point to a solved version of the same problem.
+- reveal the expected pattern;
+- provide solution code;
+- provide the key invariant;
+- rank candidate algorithms for me.
 
-Default instruction:
+### After I have committed to an approach
 
-```text
-Do not give me the solution or name the pattern.
-Only clarify wording if I ask.
-Make me identify the constraints and candidates myself.
-```
+AI may act as an interviewer:
 
-## After I have written a first approach
+- “Why does that pointer move never need to reverse?”
+- “What input breaks your complexity?”
+- “What assumption makes first discovery optimal?”
+- “Can you construct a counterexample to your greedy rule?”
 
-AI becomes an **interviewer and adversary**.
+It should challenge before correcting.
 
-It may ask:
+### After submission
 
-1. Which constraint makes the naive approach risky?
-2. What invariant does your approach rely on?
-3. Can you construct an input that breaks it?
-4. Which alternative did you reject, and why?
-5. What happens if one assumption changes?
+AI may:
 
-It should challenge the approach before offering a replacement.
-
-## After submission
-
-AI becomes a **reviewer and problem mutator**.
-
-It may:
-
-- review time and space complexity;
+- review correctness and complexity;
+- separate recognition failure from implementation failure;
 - generate counterexamples;
-- compare valid alternatives;
-- identify implementation-only bugs;
-- mutate constraints and ask whether the algorithm still applies;
-- evaluate whether my explanation actually defends the choice.
+- compare alternatives;
+- propose mutations;
+- quiz the invariant during revisits.
 
-If the submission failed because of pattern recognition, the review should reconstruct the missed
-signal rather than merely present final code.
+## Evidence rule
 
-## After a successful solve
+AI may help **analyze** an attempt, but it may not fabricate one. Fields such as `solved`,
+`hint_free`, `revisit_success`, and `mastered` are written only from actual sessions.
 
-AI may generate a mutation, but the mutation should change an applicability boundary rather than
-only rename variables.
-
-Useful mutations include:
-
-- sorted → unsorted;
-- static → streaming;
-- one query → repeated queries;
-- unweighted → weighted;
-- positive weights → negative edge;
-- exact answer → top-K;
-- fixed window → variable window.
-
-## What AI should never become here
-
-AI is not the answer key I consult before thinking. It is not a generator that fills all future
-chapters and marks them complete. Unstudied chapters remain scaffolds until real attempts create the
-need for more content.
-
-Use [`../prompts/interviewer.md`](../prompts/interviewer.md) as the default review prompt.
+The default interviewer prompt remains in [`../prompts/interviewer.md`](../prompts/interviewer.md).

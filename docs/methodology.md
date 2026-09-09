@@ -124,7 +124,7 @@ state before
 ```
 
 Visually exposing state changes is more useful here than building a frontend. Markdown tables,
-ASCII diagrams, and Mermaid are enough for v0.1.
+ASCII diagrams, and Mermaid are enough; visualization stays subordinate to reasoning.
 
 ## 8. Implement only after the choice is defended
 
@@ -196,7 +196,7 @@ Examples:
 - BFS: arbitrary positive edge weights do not preserve hop-count distance.
 - Hash map: sorted iteration or range queries may need a different structure.
 
-## 12. Practice in three modes
+## 12. Practice in four modes
 
 ### Understand
 
@@ -210,6 +210,12 @@ The pattern label is hidden. The goal is to identify the signal before coding.
 
 The problem combines patterns or offers an attractive competing approach. The goal is to defend the
 choice under ambiguity.
+
+### Mixed
+
+The category is hidden. The task starts one step earlier: classify the problem before implementing
+anything. Mixed mode should use learner-facing metadata and reveal `curriculum/answer-key.json` only
+after the classification attempt.
 
 ## 13. Move from labeled to mixed practice
 
@@ -245,3 +251,16 @@ Use the smallest accurate failure label:
 - `explanation` — solution worked but could not be defended clearly.
 
 The point of metrics is to decide what to practice next, not to make a leaderboard.
+
+## 16. Separate textbook truth from learner evidence
+
+The repository can truthfully say a chapter is `textbook_complete` because its educational content
+exists. That says nothing about my own ability to solve its problems.
+
+```text
+chapter_status = textbook_complete
+learner_status = not_started
+```
+
+Only actual attempts can change learner evidence. Reading a chapter, generating an explanation, or
+having a historical solution in another repository cannot set `solved`, `hint_free`, or `mastered`.

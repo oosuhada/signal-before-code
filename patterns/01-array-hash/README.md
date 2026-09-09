@@ -1,253 +1,116 @@
 # 01 — Array & Hash
 
-**v0.1 state:** seed chapter, ready to study — **not a mastery claim**.
+## 1. What problem shape does this solve?
 
-The point of this chapter is not “hash maps are O(1).” The point is to notice when repeated scanning
-is throwing away knowledge that could have been stored once.
+Use arrays when position/order is the natural key. Consider hashing when the question repeatedly
+asks “have I seen this value?”, “how many times?”, or “what data belongs to this key?” and scanning
+the whole collection each time would repeat work.
 
-## 1. The Situation
+Typical shapes: duplicate detection, frequency counting, complement lookup, grouping, deduplication,
+and memo-like key → value state.
 
-Imagine an event stream represented as a list of IDs:
-
-```text
-["A17", "B04", "C11", "B04", "D20"]
-```
-
-We need the **first value whose appearance proves that we have seen it before**.
-
-Nothing is sorted. We do not need the values in sorted order. We only need to answer this question
-over and over as we move left to right:
+## 2. Signals to notice
 
 ```text
-Have I seen this key already?
+contains / seen before / duplicate
+frequency / count / group by
+find complement
+lookup by identifier
+same values in different order
 ```
 
-That repeated membership question is the real shape of the problem.
+Also inspect the key domain. A small bounded integer range may favor a plain array over a hash map.
 
-## 2. First Naive Idea
+## 3. Naive idea
 
-For every new value, scan everything before it.
+For each value, scan all earlier values to see whether it appeared. For two-sum, test every pair.
+
+## 4. Why the naive idea breaks
+
+The same membership question is answered again and again. `N` items × up to `N` comparisons becomes
+`O(N²)`. The waste is not arithmetic; it is forgetting what the previous scan already learned.
+
+## 5. Core intuition
+
+Trade memory for remembered facts. When reading value `x`, store the fact that `x` exists or how many
+times it has appeared. Future questions become direct lookups instead of rescans.
+
+## 6. Invariant
+
+After processing indices `[0, i)`, the table exactly summarizes that prefix. A lookup at index `i`
+must use only information that is allowed to exist at that moment.
+
+For complement search, that distinction prevents accidentally using the same element twice.
+
+## 7. Step-by-step walkthrough
+
+Find two values summing to `10` in `[3, 8, 4, 7]`.
 
 ```text
-A17  → nothing before it
-B04  → compare with A17
-C11  → compare with A17, B04
-B04  → compare with A17, B04 → duplicate
+x=3  need=7  seen={}        → store 3
+x=8  need=2  seen={3}       → store 8
+x=4  need=6  seen={3,8}     → store 4
+x=7  need=3  seen={3,8,4}   → found 3
 ```
 
-This is easy to invent and correct.
-
-## 3. Why It Breaks
-
-It becomes **too slow** as the list grows.
-
-If there is no duplicate until the end, the comparisons look roughly like:
-
-```text
-0 + 1 + 2 + ... + (n - 1)
-```
-
-That sum grows quadratically: `O(n²)` comparisons.
-
-The deeper problem is not merely “nested loops are bad.” It is that every new element asks a
-question we have effectively answered before, but the naive version stores none of that knowledge.
-
-## 4. Signal to Notice
-
-> **Repeated membership, frequency, or key → value lookup with no need for sorted traversal**
-> should make a set or hash map a candidate.
-
-Problem-language signals include:
-
-```text
-"have we seen this before?"
-"how many times did this appear?"
-"find the item with the same key"
-"group by this identifier"
-"lookup the matching record repeatedly"
-```
-
-Also inspect the key domain. If keys are tiny bounded integers, an array may be even simpler than a
-hash structure.
-
-## 5. Candidate Approaches
-
-| Candidate | Time | Extra space | Why keep/reject it |
-| --- | --- | --- | --- |
-| scan previous values | `O(n²)` worst case | `O(1)` | simplest, but repeats membership work |
-| sort then compare neighbors | `O(n log n)` | depends on sort | useful if ordering is also valuable; may destroy original order/index meaning |
-| set of seen values | expected `O(n)` | `O(n)` | directly stores the answer to “seen before?” |
-| counting array | `O(n + K)` or `O(n)` with fixed allocation | `O(K)` | excellent when key range `0..K` is small and known |
-
-The point is not that hashing always wins. It wins here because original scan order matters and the
-query is repeated exact membership.
-
-## 6. Why This Pattern
-
-Maintain this invariant:
-
-> Before processing position `i`, `seen` contains exactly the values from positions `0..i-1`.
-
-Then the current membership check answers the duplicate question directly.
-
-```text
-value not in seen
-→ this is its first appearance
-→ store it
-
-value already in seen
-→ earlier occurrence exists
-→ duplicate proven
-```
-
-We traded memory for remembered work.
-
-## 7. Walkthrough
-
-Input:
-
-```text
-["A17", "B04", "C11", "B04", "D20"]
-```
-
-| Step | Current | `seen` before | Decision | `seen` after |
-| ---: | --- | --- | --- | --- |
-| 0 | `A17` | `{}` | new | `{A17}` |
-| 1 | `B04` | `{A17}` | new | `{A17, B04}` |
-| 2 | `C11` | `{A17, B04}` | new | `{A17, B04, C11}` |
-| 3 | `B04` | `{A17, B04, C11}` | already present → stop | unchanged |
-
-The visualization is small because the important state change is small: the set represents what the
-prefix has already taught us.
-
-For frequency counting, the state is slightly richer:
-
-```text
-value
-↓
-hash lookup
-↓
-previous count + 1
-```
+The key signal is not “two-sum uses hash.” It is “the current value asks a membership question about
+the processed prefix.”
 
 ## 8. Implementation
 
-Only now do we write code:
-
 ```python
-def first_duplicate(values):
-    seen = set()
-    for value in values:
-        if value in seen:
-            return value
-        seen.add(value)
+def two_sum_indices(nums: list[int], target: int) -> tuple[int, int] | None:
+    seen: dict[int, int] = {}
+    for index, value in enumerate(nums):
+        need = target - value
+        if need in seen:
+            return seen[need], index
+        seen[value] = index
     return None
 ```
 
-The reusable tested version is in
-[`../../signal_before_code/array_hash.py`](../../signal_before_code/array_hash.py). It also includes a
-small frequency-counter example.
-
-The implementation is intentionally ordinary. The learning value is in deriving why the set belongs
-here.
-
 ## 9. Complexity
 
-For `n` input values:
+Each element causes a constant number of average-case hash operations, so expected time is `O(N)`.
+The map can store up to `N` distinct values, so space is `O(N)`. Hash lookup is average-case, not a
+universal worst-case promise.
 
-- the loop visits each value once;
-- each set membership/add operation is expected `O(1)` for Python's hash table under normal
-  conditions;
-- therefore expected total time is `O(n)`;
-- in the all-unique case, `seen` stores `n` values, so extra space is `O(n)`.
+## 10. Common mistakes
 
-This is an **expected/amortized hash-table argument**, not a universal promise that every possible
-hash implementation has deterministic constant-time operations.
+- inserting before checking when the same element must not be reused;
+- forgetting duplicate counts when a set is insufficient;
+- using a hash map when a small integer-indexed array is simpler;
+- assuming iteration order is an algorithmic guarantee you actually need;
+- building keys from mutable/unhashable structures without canonicalization.
 
-For a bounded counting array with domain size `K`, direct indexing can avoid hashing entirely and may
-have better constants, at the cost of `O(K)` storage.
+## 11. When NOT to use it
 
-## 10. When NOT to Use It
+- One minimum/maximum over one pass does not need a map.
+- Sorted data may allow a two-pointer solution with `O(1)` extra space.
+- Range queries may need prefix sums or a tree structure instead of hashing.
+- Prefix search over strings is usually better modeled by a trie.
 
-Do not reach for a hash map merely because keys exist.
+## 12. Neighboring patterns
 
-```text
-Need one minimum from a list once?
-→ scan; a map stores irrelevant state.
+- **Hash vs two pointers:** memory-based lookup versus order-based elimination.
+- **Hash vs prefix sum:** arbitrary key lookup versus cumulative range structure.
+- **Hash vs trie:** whole-key equality versus shared-prefix queries.
 
-Need sorted iteration or range queries?
-→ hashing does not preserve numeric/key order; sorting or an ordered structure may fit better.
-
-Keys are integers 0..25?
-→ a 26-slot array can be simpler and cheaper.
-
-Need only adjacent duplicate detection in already sorted data?
-→ compare neighbors; no O(n) set is required.
-```
-
-Production bridge:
-[`AskOosu/src/lib/rag/search-cache.ts`](https://github.com/oosuhada/AskOosu/blob/main/src/lib/rag/search-cache.ts)
-builds a stable query-derived key for its RAG search cache and looks it up in PostgreSQL. That is a
-real key-based lookup use case, but it is **not** evidence that a Python dictionary is the right
-implementation for a database cache.
-
-## 11. Mutation
-
-Start from “find the first duplicate.” Now change one condition:
-
-### Mutation A — keys are guaranteed to be integers `0..100`
-
-Candidate shift:
+## 13. Mutation ladder
 
 ```text
-hash set
-→ fixed boolean/counting array becomes attractive
+unsorted pair sum          → hash lookup
+sorted pair sum            → two pointers becomes attractive
+values in [0, 1000]        → direct count array may beat hashing
+group by string signature  → hash map from canonical key → group
+prefix lookup              → trie candidate
 ```
 
-The bounded domain is new information that hashing does not exploit.
+## 14. Practice ladder
 
-### Mutation B — return duplicates in sorted order
+- **Understand:** duplicates, frequency counts, basic two-sum.
+- **Recognize:** grouping/anagram signatures, longest consecutive set membership.
+- **Apply:** combine frequency map with heap or sliding window.
+- **Mixed:** decide whether order lets you avoid hashing entirely.
 
-The set still detects membership, but it no longer solves the ordering requirement by itself. A
-sort step or ordered approach enters the design.
-
-### Mutation C — only duplicates inside the last `k` positions count
-
-The “seen forever” invariant is now wrong. State must expire:
-
-```text
-global seen set
-→ bounded moving membership state
-→ sliding-window family becomes a candidate
-```
-
-### Mutation D — group all words that are anagrams
-
-Membership is no longer enough. We need a **derived key → group** mapping, which is still hash-shaped
-but with a richer key design.
-
-## 12. Practice
-
-Do not open solutions first. For every problem, write the repeated query and candidate structures
-before coding.
-
-### Understand
-
-- [LeetCode 217 — Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) — What work
-  is repeated if every item scans the prefix?
-- [LeetCode 242 — Valid Anagram](https://leetcode.com/problems/valid-anagram/) — Is the key domain
-  bounded enough that an array can compete with a hash map?
-
-### Recognize
-
-- [Programmers 42576 — 완주하지 못한 선수](https://school.programmers.co.kr/learn/courses/30/lessons/42576)
-  — What should the lookup key represent when duplicates are possible?
-- [LeetCode 49 — Group Anagrams](https://leetcode.com/problems/group-anagrams/) — What canonical key
-  turns a grouping problem into repeated lookup?
-
-### Apply
-
-- [LeetCode 347 — Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) —
-  Hashing can count, but what additional selection problem remains after the counts exist?
-
-See the machine-readable entries in [`../../curriculum/problems.json`](../../curriculum/problems.json).
+Use [`../../curriculum/problems.json`](../../curriculum/problems.json) for curated problems.
