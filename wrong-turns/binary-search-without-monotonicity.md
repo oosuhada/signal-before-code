@@ -1,21 +1,35 @@
-# Wrong Turn: Binary Search without Monotonicity
+# Wrong Turn — Binary Search without monotonicity
 
-## Temptation
+## Tempting idea
 
-The answer is numeric and the range is huge, so binary search feels attractive.
+Use binary search on any large yes/no search space because halving sounds automatically efficient.
 
-## The missing assumption
+## Why it looks reasonable
 
-Binary search needs a predicate whose truth values form one boundary:
+Binary search's `O(log N)` label is memorable, while the proof obligation—one test must eliminate an
+entire side—is easier to forget.
+
+## Smallest counterexample
 
 ```text
-false false false | true true true
+index:      0 1 2 3 4
+predicate:  F T F T F
 ```
 
-or the reverse. If `feasible(x)` can flip back and forth, discarding half the answer space is not
-safe.
+## Step-by-step failure
 
-## Repair
+Testing index 2 returns false. That result tells us nothing about whether index 1 or index 3 is the
+desired true position. Removing either half can delete a valid answer.
 
-Write down two example values on each side of the supposed boundary. If you cannot prove monotonicity,
-do not binary-search the answer.
+## Correct signal
+
+Look for sorted order or a monotonic feasibility boundary such as `FFFFTTTT` or `TTTTFFFF`.
+
+## Better candidates
+
+Linear scan, hashing, another search structure, or reformulating the state until a monotonic
+predicate can actually be proved.
+
+## General lesson
+
+Binary search is an elimination proof, not a generic speed trick.

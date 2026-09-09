@@ -1,26 +1,36 @@
-# Wrong Turn: BFS on a Weighted Graph
+# Wrong Turn — BFS on an arbitrary weighted graph
 
-## Temptation
+## Tempting idea
 
-“This is a shortest-path problem, and BFS finds shortest paths.”
+“Shortest path” sounds like BFS because BFS is the first shortest-path algorithm many people learn.
 
-## The missing assumption
+## Why it looks reasonable
 
-BFS layers certify shortest distance only when every move has the same cost. With arbitrary edge
-weights, “one more edge” is not “one more unit of distance.”
+BFS does finalize nodes in increasing distance **when every edge contributes the same cost**. The
+mistake is remembering the result while forgetting the equal-cost assumption that proves it.
 
-## Counterexample
+## Smallest counterexample
 
 ```text
-S --100--> A
- \--1--> B --1--> A
+A --10--> B
+A --1--> C --1--> B
 ```
 
-BFS can discover A directly in one edge, but cost 100 is worse than the two-edge path of cost 2.
+## Step-by-step failure
 
-## Repair
+BFS sees `B` one edge away and `C` one edge away. If it treats edge count as cost, it accepts the
+direct route `A→B` although its weight is 10. The two-edge route through `C` costs only 2.
 
-- equal weights → BFS;
-- weights 0/1 → consider 0-1 BFS;
-- non-negative weights → Dijkstra;
-- negative weights → choose an algorithm whose correctness permits them.
+## Correct signal
+
+The question is not “shortest?” but “what makes path cost increase?” Equal edge costs permit BFS
+layers; arbitrary nonnegative weights require a cost-ordered frontier.
+
+## Better candidates
+
+Dijkstra for nonnegative weights; 0-1 BFS when weights are exactly 0/1; other methods when negative
+weights invalidate Dijkstra's finalization proof.
+
+## General lesson
+
+Always attach an algorithm to the assumption that makes its invariant true.

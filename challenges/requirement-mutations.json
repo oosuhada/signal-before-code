@@ -1,0 +1,12 @@
+{
+  "challenges": [
+    {"id":"min-once","prompt":"Static list: return the minimum once.","reveal":"Linear scan is enough; maintained order is unnecessary."},
+    {"id":"min-online","prompt":"Stream: after every insertion return the minimum.","reveal":"A min-heap becomes a natural maintained-state candidate."},
+    {"id":"top-k-final","prompt":"Offline values: return final top K, K almost N, ordered.","reveal":"Sorting may be simpler because the output already asks for broad order."},
+    {"id":"top-k-stream","prompt":"Unbounded stream: always retain only current top K.","reveal":"A size-K heap keeps only the decision boundary needed online."},
+    {"id":"connected-once","prompt":"Static graph: one connectivity query and path explanation desired.","reveal":"BFS/DFS is direct and retains traversal evidence."},
+    {"id":"connected-many","prompt":"Many union/connectivity operations interleave, no paths needed.","reveal":"Union-Find is a candidate because component state is maintained across queries."},
+    {"id":"range-static","prompt":"Immutable array: millions of range-sum queries.","reveal":"Prefix Sum turns repeated range work into subtraction after one preprocessing pass."},
+    {"id":"range-dynamic","prompt":"Range-sum queries interleave with point updates.","reveal":"Static prefixes become stale; Fenwick/Segment Tree style dynamic state becomes a candidate."}
+  ]
+}

@@ -176,6 +176,27 @@ The visualized set focuses on algorithms where state movement carries the proof:
 Sliding Window, Binary Search, Heap, BFS, DFS, Union-Find, Topological Sort, Dijkstra, DP,
 Monotonic Stack, and Backtracking.
 
+## Break the algorithm at its boundary
+
+After seeing a correct trace, change one assumption. [`mutations/chains.json`](mutations/chains.json)
+contains 20+ explicit transitions such as unweighted → 0/1 → nonnegative weighted → negative-edge
+shortest path. [`docs/decision-boundaries.md`](docs/decision-boundaries.md) is the compact question
+map; [`comparisons/online-vs-offline.md`](comparisons/online-vs-offline.md) and
+[`comparisons/static-vs-dynamic.md`](comparisons/static-vs-dynamic.md) cover engineering-flavored
+boundaries.
+
+The [`wrong-turns/`](wrong-turns/README.md) library uses the smallest counterexample possible. Attack
+the claims before reading the reveal:
+
+```bash
+python3 scripts/challenge.py sliding-window
+python3 scripts/challenge.py --mode constraint --seed 3
+python3 scripts/challenge.py --mode requirement
+```
+
+For rapid ambiguous classification, use the 56 synthetic prompts in
+[`practice-guides/adversarial-recognition.json`](practice-guides/adversarial-recognition.json).
+
 ## Personal learning loop
 
 The textbook is ready in advance. Evidence is earned later:

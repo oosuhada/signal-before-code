@@ -1,22 +1,36 @@
-# Wrong Turn: Sliding Window with Negative Values
+# Wrong Turn — Sliding Window with negative values
 
-## Temptation
+## Tempting idea
 
-For “shortest subarray with sum at least K,” expand right until the sum is big enough, then shrink
-left while it stays big enough.
+For a contiguous sum condition, expand right and move left whenever the sum is too large.
 
-## The missing assumption
+## Why it looks reasonable
 
-That logic assumes moving right cannot decrease the sum and moving left cannot increase it. Negative
-values break both directions.
+With nonnegative values, adding on the right cannot decrease the sum and removing on the left cannot
+increase it. That directional behavior makes discarded starts safe.
+
+## Smallest counterexample
 
 ```text
-[2, -5, 10], K = 7
+values = [2, -5, 10]
+target >= 7
 ```
 
-The window sum does not change monotonically with its boundaries.
+## Step-by-step failure
 
-## Repair
+The sum can decrease when right expands (`2 → -3`) and increase when a negative left value is
+removed. A local “too small/too large” condition no longer tells one boundary which way repairs it.
 
-Re-express the condition using prefix sums; for some variants, a monotonic deque over prefix sums is
-the correct advanced pattern.
+## Correct signal
+
+Sliding window needs a boundary movement whose effect on validity is predictable. Contiguity alone is
+not enough.
+
+## Better candidates
+
+Prefix Sum + Hash for exact-sum style variants; Monotonic Queue over prefix sums for some shortest
+threshold variants; problem-specific DP/search elsewhere.
+
+## General lesson
+
+Name the monotonic boundary effect before writing a sliding-window loop.

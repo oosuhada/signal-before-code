@@ -58,6 +58,16 @@ REQUIRED_TRACES = {
     "backtracking",
 }
 
+COUNTEREXAMPLE_HEADINGS = [
+    "## Tempting idea",
+    "## Why it looks reasonable",
+    "## Smallest counterexample",
+    "## Step-by-step failure",
+    "## Correct signal",
+    "## Better candidates",
+    "## General lesson",
+]
+
 
 def read_json(relative: str, errors: list[str]) -> dict[str, object] | None:
     path = ROOT / relative
@@ -356,6 +366,57 @@ def validate_visual_traces(errors: list[str]) -> None:
             errors.append("traces/wrong-states.json must contain at least 5 wrong-state traces")
 
 
+def validate_boundaries(errors: list[str]) -> tuple[int, int, int]:
+    mutations = read_json("mutations/chains.json", errors)
+    chains: list[object] = []
+    if mutations is not None:
+        value = mutations.get("chains")
+        if isinstance(value, list):
+            chains = value
+        else:
+            errors.append("mutations/chains.json: chains must be a list")
+    if len(chains) < 20:
+        errors.append(f"expected at least 20 mutation chains, found {len(chains)}")
+    for index, chain in enumerate(chains):
+        if not isinstance(chain, dict) or not chain.get("id") or not chain.get("transitions"):
+            errors.append(f"mutation chain {index} needs id and non-empty transitions")
+
+    wrong_turns = sorted((ROOT / "wrong-turns").glob("*.md"))
+    wrong_turns = [path for path in wrong_turns if path.name != "README.md"]
+    if len(wrong_turns) < 20:
+        errors.append(f"expected at least 20 counterexample docs, found {len(wrong_turns)}")
+    for path in wrong_turns:
+        text = path.read_text(encoding="utf-8")
+        for heading in COUNTEREXAMPLE_HEADINGS:
+            if heading not in text:
+                errors.append(
+                    f"{path.relative_to(ROOT)} missing counterexample heading {heading!r}"
+                )
+
+    counterexamples = read_json("challenges/counterexamples.json", errors)
+    if counterexamples is not None:
+        items = counterexamples.get("challenges")
+        if not isinstance(items, list) or len(items) < 20:
+            errors.append("challenges/counterexamples.json must contain at least 20 challenges")
+
+    adversarial = read_json("practice-guides/adversarial-recognition.json", errors)
+    prompts: list[object] = []
+    if adversarial is not None:
+        value = adversarial.get("prompts")
+        if isinstance(value, list):
+            prompts = value
+        else:
+            errors.append("adversarial-recognition.json: prompts must be a list")
+    if not 50 <= len(prompts) <= 100:
+        errors.append(
+            f"adversarial recognition set should contain 50-100 prompts, found {len(prompts)}"
+        )
+    prompt_ids = [item.get("id") for item in prompts if isinstance(item, dict)]
+    if len(prompt_ids) != len(set(prompt_ids)):
+        errors.append("adversarial recognition prompt ids must be unique")
+    return len(chains), len(wrong_turns), len(prompts)
+
+
 def validate_local_markdown_links(errors: list[str]) -> None:
     for markdown in ROOT.rglob("*.md"):
         if ".git" in markdown.parts:
@@ -389,6 +450,7 @@ def main() -> int:
     validate_revisit_csv(errors)
     validate_personal_templates(errors)
     validate_visual_traces(errors)
+    mutation_count, wrong_turn_count, adversarial_count = validate_boundaries(errors)
     validate_local_markdown_links(errors)
 
     if errors:
@@ -403,6 +465,8 @@ def main() -> int:
         f"{problem_count} curated problems, "
         f"{python_fences} chapter Python examples compiled, "
         f"{len(REQUIRED_TRACES)} core visual traces, "
+        f"{mutation_count} mutation chains, {wrong_turn_count} counterexamples, "
+        f"{adversarial_count} adversarial prompts, "
         "learner evidence contract and local links OK."
     )
     return 0

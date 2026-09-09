@@ -1,17 +1,33 @@
-# Wrong Turn: “Take the Best-Looking Choice”
+# Wrong Turn — Greedy without a proof
 
-## Temptation
+## Tempting idea
 
-Greedy code is short, so a locally best move is easy to trust.
+Take the locally largest reward at every step because each choice improves the answer immediately.
 
-## Counterexample
+## Why it looks reasonable
 
-With coins `[1, 3, 4]` and target `6`, largest-first gives `4 + 1 + 1`, while `3 + 3` uses fewer
-coins.
+Local improvement feels aligned with global optimization, especially when examples are too small to
+expose delayed consequences.
 
-## The missing proof
+## Smallest counterexample
 
-A greedy rule needs a reason that committing now cannot destroy a better global solution. Typical
-proof shapes include exchange arguments, cut properties, or dominance ordering.
+Coin change with denominations `{1, 3, 4}` and target `6`.
 
-If the only defense is “it seems best,” keep DP or exhaustive search alive as candidates.
+## Step-by-step failure
+
+Largest-first chooses `4`, then `1`, then `1`: three coins. Choosing `3 + 3` uses two coins. The
+first greedy choice cannot be exchanged into an optimal solution without changing the result.
+
+## Correct signal
+
+Look for an exchange argument, cut property, monotonic ordering proof, or another reason a local
+choice can appear in some global optimum.
+
+## Better candidates
+
+DP for arbitrary coin systems; exhaustive search at tiny scale; a proven greedy rule only when the
+problem structure supports it.
+
+## General lesson
+
+“Looks best now” is a hypothesis. Greedy becomes an algorithm only after the hypothesis is proved.

@@ -1,0 +1,12 @@
+{
+  "challenges": [
+    {"id":"pairs-20","prompt":"Same pair-scoring problem, N <= 20. Which baseline remains useful?","reveal":"O(N^2) brute force is still a valuable correctness baseline; do not force a complex pattern."},
+    {"id":"pairs-200k","prompt":"Same pair-scoring problem, N <= 200,000. What must disappear first?","reveal":"Quadratic pair enumeration is usually outside budget; seek ordering, hashing, monotonicity, or structure."},
+    {"id":"subsets-20","prompt":"Need all subset choices, N <= 20. What becomes plausible?","reveal":"2^N enumeration/bitmask/backtracking may be practical depending on per-state work and limits."},
+    {"id":"subsets-50","prompt":"Same subset objective, N = 50. What boundary was crossed?","reveal":"2^50 is too large for direct enumeration; meet-in-the-middle or compressed DP become candidates."},
+    {"id":"graph-matrix-small","prompt":"Dense graph, N=300, frequent edge existence checks. Is adjacency matrix automatically wrong?","reveal":"No. N^2 storage may be acceptable and constant-time edge checks may justify it."},
+    {"id":"graph-matrix-large","prompt":"Sparse graph, N=200,000. What representation should be questioned?","reveal":"An N^2 matrix is infeasible; adjacency lists preserve only existing edges."},
+    {"id":"dp-grid-memory","prompt":"DP grid is 10,000 x 10,000 but each row depends only on previous row. What changes?","reveal":"Full 2D memory is the boundary; rolling-row DP may preserve the transition with O(width) memory."},
+    {"id":"recursion-depth","prompt":"DFS depth may reach 500,000 in Python. Is recursive DFS still an implementation-neutral choice?","reveal":"No. The algorithm may be valid while recursion depth is unsafe; iterative DFS becomes the practical form."}
+  ]
+}

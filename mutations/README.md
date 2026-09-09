@@ -1,26 +1,49 @@
-# Mutation Atlas
+# Mutation Lab — learn the boundary, not the label
 
-Mutation practice changes one assumption and asks whether the original algorithm survives.
+A pattern becomes useful knowledge when one changed assumption makes you reconsider it. The
+canonical machine-readable map is [`chains.json`](chains.json). Every transition answers:
 
-| Original condition | Mutation | Selection shift |
-| --- | --- | --- |
-| unweighted shortest path | arbitrary non-negative weights | BFS → Dijkstra |
-| weights are 0/1 | only two edge costs 0 and 1 | Dijkstra candidate → 0-1 BFS candidate |
-| sorted pair sum | input becomes unsorted | two pointers → sort first or hash |
-| positive-number sum window | negative values allowed | ordinary shrinking window may fail → prefix-based reasoning |
-| static range sums | point updates added | prefix sum → Fenwick/segment tree territory |
-| one minimum query | repeated insert + extract-min | scan → heap |
-| static connectivity | many edge additions + queries | traversal → Union-Find |
-| DAG prerequisite graph | cycle introduced | topological order becomes impossible |
-| non-negative shortest path | negative edge introduced | Dijkstra guarantee disappears |
-| coin system has greedy property | arbitrary denominations | greedy may fail → DP |
-| enumerate all subsets | only best value per subset-state needed | bitmask enumeration → bitmask DP candidate |
-| nearest greater element | maximum over every moving window | monotonic stack → monotonic queue |
+```text
+What changed?
+→ Which proof/invariant stopped working?
+→ Which candidate set should replace it?
+```
 
-## How to use a mutation
+These are **candidate transitions**, not a cookbook. A real problem may contain several signals at
+once, and constraints still decide whether a theoretically valid approach is practical.
 
-For every solved problem, write one sentence in this form:
+## High-value chains
 
-> “My solution relies on ______. If ______ changed, I would reconsider ______ because ______.”
+```text
+unweighted shortest path
+→ BFS
+  edge weights become 0/1
+→ 0-1 BFS candidate
+  arbitrary nonnegative weights
+→ Dijkstra candidate
+  negative edge appears
+→ Dijkstra finalization proof breaks
+```
 
-That sentence tests whether you learned a name or an applicability boundary.
+```text
+sorted pair sum
+→ Two Pointers
+  ordering removed, exact complement lookup remains
+→ Hash candidate
+  requirement becomes contiguous range sum
+→ Sliding Window if boundary movement is monotonic
+  negative values appear
+→ Prefix Sum / Hash / Monotonic Queue candidates
+```
+
+```text
+one minimum from static data
+→ Linear scan
+  need full sorted output
+→ Sort
+  repeated min with insertions
+→ Heap
+```
+
+Study [`../docs/decision-boundaries.md`](../docs/decision-boundaries.md) beside the chains, then use
+[`../scripts/challenge.py`](../scripts/challenge.py) to attack claims with small counterexamples.

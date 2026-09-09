@@ -1,22 +1,32 @@
-# Wrong Turn: DP Overengineering
+# Wrong Turn — DP before a repeated state exists
 
-## Temptation
+## Tempting idea
 
-The problem asks for a minimum/maximum, so create a `dp` table immediately.
+Create `dp[i]` or `dp[i][j]` whenever a problem asks for a maximum/minimum.
 
-## Failure mode
+## Why it looks reasonable
 
-DP is not synonymous with optimization. If there are no overlapping subproblems or if a stronger
-invariant enables a greedy/linear solution, a large state table adds complexity without buying
-anything.
+Optimization problems and DP often appear together, so adding a table feels sophisticated and safe.
 
-## Diagnostic
+## Smallest counterexample
 
-Before building a table, answer:
+Find the maximum element in `[3, 8, 2]`.
 
-1. What does one state mean?
-2. Can different decision paths reach the same state?
-3. Does the future depend only on that state?
-4. How many states and transitions exist?
+## Step-by-step failure
 
-If those answers are vague, the DP design is premature.
+A table `dp[i] = max of prefix 0..i` works, but if only the final maximum is requested, every old
+cell is dead state. One running variable preserves exactly the needed information.
+
+## Correct signal
+
+Before DP, identify repeated subproblems and define what one state means. Then ask whether multiple
+states must remain available for future transitions.
+
+## Better candidates
+
+Linear scan for one aggregate; greedy or another direct invariant when no overlapping subproblem
+structure exists.
+
+## General lesson
+
+DP is justified by reusable state dependencies, not by the presence of “best,” “count,” or “ways.”
