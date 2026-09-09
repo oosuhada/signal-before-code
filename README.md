@@ -1,6 +1,7 @@
 # signal-before-code
 
-**An intuition-first algorithm selection textbook + a separate personal practice system.**
+**An intuition-first algorithm textbook and practice system that teaches when a tool fits, where it
+fails, and how to defend that choice in code, in an interview, and in real engineering.**
 
 I already build web, AI, backend, and systems software with queues, caches, graphs, schedulers,
 indexes, retries, and state machines. What I want to train here is a different skill: reading an
@@ -52,6 +53,46 @@ The textbook may be complete before I solve the problems. The personal layer may
 
 > **Textbook completion is not learner mastery.**
 
+## The full training path
+
+The repository now stops feature expansion at the point where real practice should take over:
+
+```text
+FOUNDATION
+  learn constraints and complexity
+        ↓
+PATTERN
+  derive invariant and implementation
+        ↓
+SEE THE STATE
+  visual trace + predict-before-reveal
+        ↓
+BOUNDARY
+  mutation chains + smallest counterexamples
+        ↓
+PRACTICE
+  mixed / unseen / due / weakest
+        ↓
+REVIEW
+  confidence calibration + spaced repetition
+        ↓
+INTERVIEW
+  oral defense + whiteboard + Python→Java transfer
+        ↓
+REAL SYSTEM
+  defend the same choice against verified engineering artifacts
+```
+
+Version roles:
+
+```text
+v0.2  Complete Textbook
+v0.3  See the Algorithm
+v0.4  Understand Its Boundaries
+v0.5  Train and Measure Weaknesses
+v0.6  Transfer to Interviews and Real Engineering
+```
+
 ## How to use the book
 
 1. Read [`concepts/reading-constraints.md`](concepts/reading-constraints.md) and
@@ -64,6 +105,20 @@ The textbook may be complete before I solve the problems. The personal layer may
 6. Use [`practice-guides/recognition-quiz.md`](practice-guides/recognition-quiz.md) and
    [`practice-guides/flash-recognition.md`](practice-guides/flash-recognition.md) for fast recall.
 7. Then solve problems without hints and record only real evidence in the personal layer.
+
+For active state tracing, use [`visuals/`](visuals/README.md) or:
+
+```bash
+python3 scripts/trace.py binary-search --predict
+python3 scripts/trace.py dijkstra --step
+```
+
+For boundary attacks and interview transfer:
+
+```bash
+python3 scripts/challenge.py sliding-window
+python3 scripts/interview.py --chapter 15-shortest-path-dijkstra --step
+```
 
 ## Curriculum
 
@@ -270,6 +325,26 @@ real:
   [`elevator-queue-lab`](https://github.com/oosuhada/elevator-queue-lab)
 
 Exact verified files and non-claims are recorded in [`docs/bridges.md`](docs/bridges.md).
+Long-form “why this structure, why not another one?” defenses are in
+[`case-studies/`](case-studies/README.md).
+
+## Python → Java and oral transfer
+
+The textbook remains Python-primary, but [`languages/python-vs-java.md`](languages/python-vs-java.md)
+and the 29-item [`languages/java/`](languages/java/README.md) canonical set train implementation
+friction without cloning the whole problem roadmap. The same invariant is translated through
+`HashMap`, `HashSet`, `ArrayDeque`, `PriorityQueue`, comparators, primitive arrays, and Java numeric
+width rules.
+
+Every chapter also has a 30-second defense, 2-minute defense, and deep follow-ups in
+[`interview/oral-defense.json`](interview/oral-defense.json). Use
+[`interview/code-less-reasoning.md`](interview/code-less-reasoning.md) when the goal is selection
+without code, and [`interview/whiteboard-drills.md`](interview/whiteboard-drills.md) when the goal is
+implementation without IDE assistance.
+
+Before a timed coding test, review [`docs/coding-test-strategy.md`](docs/coding-test-strategy.md).
+When code fails, debug the violated invariant with
+[`docs/debugging-strategy.md`](docs/debugging-strategy.md).
 
 ## Why this is not another solution archive
 
@@ -288,7 +363,7 @@ beneath-the-stack              → implement and measure abstractions internally
 ## Quality
 
 The repository deliberately avoids frontend/dashboard infrastructure. CI validates the educational
-contract and the small set of executable Python examples:
+contract, executable Python examples, and the canonical Java transfer set:
 
 ```bash
 ruff format --check .
@@ -296,10 +371,12 @@ ruff check .
 python -m compileall -q signal_before_code scripts tests
 python -m unittest discover -s tests -v
 python scripts/validate_repo.py
+javac -d /tmp/signal-before-code-java languages/java/src/*.java
 ```
 
 The validator checks chapter sections, internal Markdown links, curriculum metadata, duplicate
-problem IDs, textbook/learner status separation, JSON schemas, and personal-learning templates.
+problem IDs, textbook/learner status separation, trace/mutation contracts, learning-engine fixtures,
+Java/oral-defense coverage, JSON schemas, and personal-learning templates.
 
 Start with [`docs/algorithm-selection-map.md`](docs/algorithm-selection-map.md), then pick the first
 chapter whose signals you cannot yet explain without looking.

@@ -477,6 +477,101 @@ def validate_learning_engine(errors: list[str]) -> None:
             )
 
 
+def validate_interview_transfer(chapter_ids: set[str], errors: list[str]) -> int:
+    catalog = read_json("languages/java/catalog.json", errors)
+    implementations: list[object] = []
+    if catalog is not None:
+        value = catalog.get("implementations")
+        if isinstance(value, list):
+            implementations = value
+        else:
+            errors.append("languages/java/catalog.json: implementations must be a list")
+    if not 25 <= len(implementations) <= 40:
+        errors.append(
+            f"Java transfer set should contain 25-40 canonical implementations, "
+            f"found {len(implementations)}"
+        )
+    covered: set[str] = set()
+    for index, item in enumerate(implementations):
+        if not isinstance(item, dict):
+            errors.append(f"Java implementation {index} must be an object")
+            continue
+        chapter = item.get("chapter")
+        source = item.get("source")
+        symbol = item.get("symbol")
+        if chapter not in chapter_ids:
+            errors.append(f"Java implementation {index}: unknown chapter {chapter!r}")
+        elif isinstance(chapter, str):
+            covered.add(chapter)
+        if not isinstance(source, str) or not isinstance(symbol, str):
+            errors.append(f"Java implementation {index}: source/symbol must be strings")
+            continue
+        source_path = ROOT / "languages" / "java" / "src" / source
+        if not source_path.exists():
+            errors.append(f"Java implementation {index}: missing source {source}")
+        elif symbol not in source_path.read_text(encoding="utf-8"):
+            errors.append(f"Java implementation {index}: symbol {symbol!r} not found in {source}")
+    if covered != chapter_ids:
+        errors.append(
+            "Java canonical set must cover every textbook chapter; missing "
+            f"{sorted(chapter_ids - covered)}"
+        )
+
+    defense = read_json("interview/oral-defense.json", errors)
+    oral: list[object] = []
+    if defense is not None:
+        value = defense.get("chapters")
+        if isinstance(value, list):
+            oral = value
+        else:
+            errors.append("interview/oral-defense.json: chapters must be a list")
+    if len(oral) != len(chapter_ids):
+        errors.append(f"oral defense must cover {len(chapter_ids)} chapters, found {len(oral)}")
+    oral_ids: set[str] = set()
+    for index, item in enumerate(oral):
+        if not isinstance(item, dict):
+            errors.append(f"oral defense {index} must be an object")
+            continue
+        chapter = item.get("chapter")
+        if isinstance(chapter, str):
+            oral_ids.add(chapter)
+        for field in ["thirty_second", "two_minute"]:
+            if not isinstance(item.get(field), str) or len(str(item.get(field, ""))) < 80:
+                errors.append(f"oral defense {chapter}: {field} is too thin")
+        follow_ups = item.get("follow_ups")
+        if not isinstance(follow_ups, list) or len(follow_ups) < 3:
+            errors.append(f"oral defense {chapter}: expected at least 3 follow-ups")
+    if oral_ids != chapter_ids:
+        errors.append(f"oral defense chapter mismatch: {sorted(chapter_ids - oral_ids)} missing")
+
+    required_docs = [
+        "languages/python-vs-java.md",
+        "interview/code-less-reasoning.md",
+        "interview/whiteboard-drills.md",
+        "docs/coding-test-strategy.md",
+        "docs/debugging-strategy.md",
+        "case-studies/README.md",
+    ]
+    for relative in required_docs:
+        if not (ROOT / relative).exists():
+            errors.append(f"missing interview-transfer document: {relative}")
+    if not (ROOT / "scripts" / "interview.py").exists():
+        errors.append("missing interview CLI: scripts/interview.py")
+
+    case_studies = [
+        path for path in (ROOT / "case-studies").glob("*.md") if path.name != "README.md"
+    ]
+    if len(case_studies) < 5:
+        errors.append(f"expected at least 5 applied case studies, found {len(case_studies)}")
+    for path in case_studies:
+        text = path.read_text(encoding="utf-8")
+        if "Why not" not in text:
+            errors.append(
+                f"{path.relative_to(ROOT)} must defend at least one 'Why not' alternative"
+            )
+    return len(implementations)
+
+
 def validate_local_markdown_links(errors: list[str]) -> None:
     for markdown in ROOT.rglob("*.md"):
         if ".git" in markdown.parts:
@@ -512,6 +607,7 @@ def main() -> int:
     validate_visual_traces(errors)
     mutation_count, wrong_turn_count, adversarial_count = validate_boundaries(errors)
     validate_learning_engine(errors)
+    java_count = validate_interview_transfer(chapter_ids, errors)
     validate_local_markdown_links(errors)
 
     if errors:
@@ -528,6 +624,7 @@ def main() -> int:
         f"{len(REQUIRED_TRACES)} core visual traces, "
         f"{mutation_count} mutation chains, {wrong_turn_count} counterexamples, "
         f"{adversarial_count} adversarial prompts, "
+        f"{java_count} Java transfer examples, 28 oral defenses, "
         "learning engine/evidence contract and local links OK."
     )
     return 0

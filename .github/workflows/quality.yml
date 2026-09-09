@@ -15,6 +15,10 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
       - name: Install formatter and linter
         run: python -m pip install --disable-pip-version-check ruff
       - name: Format check
@@ -23,6 +27,8 @@ jobs:
         run: ruff check .
       - name: Syntax check
         run: python -m compileall -q signal_before_code scripts tests
+      - name: Java transfer compile
+        run: javac -d /tmp/signal-before-code-java languages/java/src/*.java
       - name: Unit tests
         run: python -m unittest discover -s tests -v
       - name: Repository contract

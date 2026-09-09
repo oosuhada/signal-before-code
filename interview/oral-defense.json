@@ -1,0 +1,174 @@
+{
+  "version": "0.6",
+  "policy": "Explain the selection boundary before reciting implementation details.",
+  "chapters": [
+    {
+      "chapter": "01-array-hash",
+      "thirty_second": "Use a hash-based structure when the expensive repeated question is exact membership, frequency, or key-to-value lookup. The trade is extra memory for avoiding rescans; it is not automatically right for ordered or range queries.",
+      "two_minute": "Start from the naive repeated scan. If each item asks whether a key has already appeared, storing that answer once changes repeated O(n) searches into expected constant-time lookups. Choose a set for membership, a map for counts or associated values, and a bounded array when the key domain is tiny and known. The invariant is that the structure summarizes exactly the processed prefix. I would not choose hashing when sorted iteration, predecessor/range queries, or a one-shot scan is the real requirement.",
+      "follow_ups": ["When is an array better than a HashMap?", "Why is hash lookup usually described as expected O(1)?", "What mutation would make sorted order more important than lookup speed?"]
+    },
+    {
+      "chapter": "02-two-pointers",
+      "thirty_second": "Two pointers work when moving a boundary lets me safely eliminate candidates, usually because sorted order or another monotonic relation tells me which side cannot participate anymore.",
+      "two_minute": "The key is not having two indexes; it is irreversible elimination. In sorted pair sum, if the smallest plus largest is too small, that smallest value cannot pair with any remaining value to reach the target, so left can move. Each pointer moves only one direction, which gives linear total movement. If the input is unsorted and original positions matter, hashing may be safer; if the problem is one monotonic lookup, binary search may fit better.",
+      "follow_ups": ["Why does unsorted pair sum break the elimination proof?", "How is this different from sliding window?", "Can two pointers still work after sorting if original indices are required?"]
+    },
+    {
+      "chapter": "03-sliding-window",
+      "thirty_second": "Sliding window is a candidate for contiguous ranges when I can update window state incrementally and boundary movement restores validity monotonically.",
+      "two_minute": "I first ask whether the answer is contiguous and whether removing from the left has a predictable effect on the constraint. A valid window keeps a summary such as frequency or sum while right expands and left repairs violations. Each boundary advances at most n times, so the total work can be linear even with a nested while loop. Negative numbers often break sum-based monotonic repair, in which case prefix sums, hashing, or a monotonic deque may replace the window.",
+      "follow_ups": ["Why can a nested while still be O(n)?", "Give a negative-number counterexample.", "When is prefix sum preferable even for a contiguous problem?"]
+    },
+    {
+      "chapter": "04-stack-queue",
+      "thirty_second": "Choose a stack when the most recently unresolved state must be handled next, and a queue when work must preserve discovery or arrival order.",
+      "two_minute": "The data structure should match the dependency order. Balanced delimiters are LIFO because a closer must match the most recent unmatched opener. BFS is FIFO because earlier distance layers must leave before later ones. The invariant is not simply 'I used a deque'; it is what the chosen end-order guarantees. If I need priority rather than age, a heap is the better candidate.",
+      "follow_ups": ["Why is ArrayDeque preferred over Java Stack?", "What requirement turns a queue into a priority queue problem?", "What bug appears if BFS queue order is disturbed?"]
+    },
+    {
+      "chapter": "05-binary-search",
+      "thirty_second": "Binary search needs a monotonic search space: one observation must let me discard an entire half while preserving the possible answer region.",
+      "two_minute": "Sorted lookup is only the simplest form. The deeper pattern is a monotonic predicate such as feasible(capacity), where answers change from false to true once. I state the interval convention and invariant before coding, then update a boundary without losing the transition point. Complexity is logarithmic because each decision cuts the candidate range roughly in half. Without monotonicity, binary search has no safe elimination proof.",
+      "follow_ups": ["Explain binary search on answer without a sorted array.", "How do you avoid off-by-one errors?", "What is the invariant for first-true search?"]
+    },
+    {
+      "chapter": "06-heap-priority-queue",
+      "thirty_second": "A heap is useful when the current min or max must be selected repeatedly while the candidate set changes; it avoids fully re-sorting after every update.",
+      "two_minute": "The heap preserves only enough order to expose an extremum. Push and pop cost logarithmic time because repair follows one tree path; the rest of the structure is not globally sorted. That makes it strong for top-K, schedulers, and shortest-path frontiers. A one-time minimum only needs a scan, and full sorted output may be simpler with sorting. If priorities can change by reinsertion, I also need a stale-entry check.",
+      "follow_ups": ["Why is heap iteration not sorted?", "When is sorting simpler than a heap?", "How do stale entries arise in Dijkstra?"]
+    },
+    {
+      "chapter": "07-linked-list",
+      "thirty_second": "Linked-list problems are mostly about pointer ownership and local rewiring, not random access; I preserve reachability before changing next pointers.",
+      "two_minute": "The useful signal is a chain of node references where insertion, deletion, reversal, or cycle structure matters. During reversal, before current.next changes I save the old next node, then redirect the edge and advance. The invariant is that the processed prefix is reversed and the unprocessed suffix remains reachable. If I repeatedly need indexing, an array-like structure is usually the better representation.",
+      "follow_ups": ["Why must next be saved before rewiring?", "How does fast/slow cycle detection use relative speed?", "When should you copy values into an array instead?"]
+    },
+    {
+      "chapter": "08-tree-bst",
+      "thirty_second": "Trees give hierarchical subproblems; BST-specific algorithms additionally rely on an ordering invariant that narrows valid value ranges or search direction.",
+      "two_minute": "For a generic tree I ask what information each subtree should return to its parent. For a BST I must preserve global ordering, not only compare a node to its immediate children. A validation recursion can carry an allowed (low, high) interval downward. DFS is natural for subtree aggregation, while BFS fits level-order questions. A degenerate tree can still have linear height, so I do not call every BST operation O(log n) without a balance guarantee.",
+      "follow_ups": ["Why is local child comparison insufficient for BST validation?", "When is BFS better than DFS on a tree?", "When does BST search degrade to O(n)?"]
+    },
+    {
+      "chapter": "09-recursion",
+      "thirty_second": "Recursion is useful when a problem is defined in smaller versions of itself and every call has a base case plus measurable progress toward it.",
+      "two_minute": "I identify the state owned by one call, the smaller states it invokes, and the base case that stops expansion. The call stack stores unfinished work automatically, which is elegant for trees and divide-and-conquer but consumes stack memory. Repeated identical states signal memoization or DP; very deep linear recursion may be safer as an explicit stack or loop.",
+      "follow_ups": ["How do you prove recursion terminates?", "What turns recursion into DP?", "When would you replace recursion with an explicit stack?"]
+    },
+    {
+      "chapter": "10-backtracking",
+      "thirty_second": "Backtracking explores a decision tree by choose → explore → undo, and pruning is valid only when a partial state can no longer lead to a valid solution.",
+      "two_minute": "I model each node as a partial decision state. A branch mutates path state, explores recursively, then undoes exactly that mutation before trying a sibling. The invariant is branch isolation: sibling exploration starts from the same parent state. Exponential complexity can be acceptable only for small effective N or strong pruning. If many branches converge to the same state, DP may replace repeated exploration.",
+      "follow_ups": ["What must undo restore?", "How is pruning different from greedy choice?", "What signal suggests memoization instead of raw backtracking?"]
+    },
+    {
+      "chapter": "11-graph-fundamentals",
+      "thirty_second": "Before choosing a graph algorithm, I translate entities and relationships into nodes and edges, then classify direction, weights, density, and the actual query.",
+      "two_minute": "Graph representation is part of the algorithm choice. An adjacency list fits sparse traversal because work scales with existing edges; a matrix gives constant-time edge lookup but O(V²) storage. Directed versus undirected and weighted versus unweighted determine which later algorithms are valid. The same graph can require BFS for hop distance, topo sort for dependency order, Union-Find for repeated connectivity, or Dijkstra for nonnegative weighted distance.",
+      "follow_ups": ["When is an adjacency matrix justified?", "Why is 'graph problem' not enough to choose BFS?", "Which graph properties matter before shortest path selection?"]
+    },
+    {
+      "chapter": "12-bfs-dfs",
+      "thirty_second": "BFS preserves distance layers with FIFO order; DFS commits to one branch and is useful for reachability, components, and recursive structure when shortest hop count is not required.",
+      "two_minute": "For unweighted shortest paths, BFS's queue ensures nodes at distance d are processed before distance d+1, so first discovery gives minimum hops. DFS does not have that ordering guarantee, but its depth-first structure is simple for components, cycle structure, or path enumeration. Both are O(V+E) with an adjacency list because each node and edge is processed a bounded number of times. Visited timing matters: marking on enqueue prevents duplicate BFS frontier work.",
+      "follow_ups": ["Why is first DFS path not necessarily shortest?", "Why mark BFS visited when enqueuing?", "How do memory profiles of BFS and DFS differ?"]
+    },
+    {
+      "chapter": "13-union-find",
+      "thirty_second": "Union-Find is for repeated merge/connectivity questions where I need component identity, not paths or distances.",
+      "two_minute": "Each element points toward a representative root. Find answers which component an item belongs to, and union merges roots. Path compression and union by size/rank make a long sequence of operations nearly constant amortized time. It is excellent for incremental connectivity or Kruskal-style cycle checks, but it cannot tell me the actual route, hop count, or directed dependency order.",
+      "follow_ups": ["What does path compression change?", "Why can't Union-Find answer shortest path?", "Static one-shot connectivity: when is DFS simpler?"]
+    },
+    {
+      "chapter": "14-topological-sort",
+      "thirty_second": "Topological sort is a DAG ordering problem: every prerequisite must appear before what depends on it, and failure to emit all nodes detects a cycle.",
+      "two_minute": "With Kahn's algorithm I count indegrees, queue every zero-indegree node, emit one, remove its outgoing prerequisite edges, and enqueue newly released nodes. The invariant is that a queued node has no unfinished prerequisite. If fewer than V nodes are emitted, remaining nodes are trapped in a cycle. This is not for generic reachability or shortest path; it answers dependency order specifically.",
+      "follow_ups": ["How does Kahn's algorithm detect a cycle?", "Can multiple topological orders be valid?", "When would DFS-based topo be preferable?"]
+    },
+    {
+      "chapter": "15-shortest-path-dijkstra",
+      "thirty_second": "Dijkstra is a candidate for shortest paths with nonnegative edge weights because the smallest tentative distance can be finalized safely.",
+      "two_minute": "The priority queue exposes the unfinalized node with minimum tentative distance. Nonnegative edges mean any alternative route through another unfinalized node can only add cost, so that minimum is final. Relaxation improves neighbors and pushes new priorities; stale heap entries are skipped. Complexity with an adjacency list and binary heap is O((V+E) log V). A negative edge breaks the finalization proof; equal unit weights make BFS simpler.",
+      "follow_ups": ["Prove why the extracted minimum is final.", "Why do stale heap entries not break correctness?", "What changes for 0/1 weights or negative edges?"]
+    },
+    {
+      "chapter": "16-greedy",
+      "thirty_second": "Greedy is valid only when a locally best choice can be shown not to destroy a global optimum; the proof matters more than the code.",
+      "two_minute": "I define the local rule, then ask whether an exchange argument can transform any optimal solution to use my choice without making it worse. Interval scheduling works by choosing the earliest finishing compatible interval because it leaves maximum room for what follows. Arbitrary coin systems show the danger: a plausible local rule can fail. If future choices interact through state and no exchange proof exists, DP is a stronger candidate.",
+      "follow_ups": ["Give an exchange-argument intuition.", "Give a smallest greedy counterexample.", "What signal should make you switch to DP?"]
+    },
+    {
+      "chapter": "17-prefix-sum",
+      "thirty_second": "Prefix sums move repeated range aggregation work into preprocessing: a static range sum becomes the difference of two accumulated boundaries.",
+      "two_minute": "I define prefix[i] as the aggregate before index i, so sum(left,right) is prefix[right]-prefix[left]. Building takes O(n), and each static query becomes O(1). This is useful when there are many range queries over unchanged data or when algebraic differences expose subarray conditions. Frequent updates invalidate many later prefixes, so Fenwick/segment tree or another dynamic structure becomes a better candidate.",
+      "follow_ups": ["Why is an n+1 prefix array convenient?", "What changes with frequent updates?", "How can prefix sums help when negative values break sliding window?"]
+    },
+    {
+      "chapter": "18-interval-problems",
+      "thirty_second": "Interval problems become easier after sorting by the boundary relevant to the decision, then maintaining the last merged or selected interval.",
+      "two_minute": "I first decide whether the requirement is merge, count overlap, schedule non-overlapping work, or query active intervals. Sorting exposes local relationships that were global in arbitrary order. For merging by start, once I compare the next start with the current end, earlier intervals cannot reappear. For maximum compatible scheduling, sorting by end supports a greedy proof. Online insert/query requirements may instead need a tree or heap.",
+      "follow_ups": ["Why sort by start for merge but by end for interval scheduling?", "What changes for online interval insertion?", "When is a sweep line the better model?"]
+    },
+    {
+      "chapter": "19-dp-fundamentals",
+      "thirty_second": "DP starts when recursive choices revisit the same subproblem. The hardest step is defining exactly what one state means, not writing the recurrence.",
+      "two_minute": "I first write the naive recursive state and look for repeated calls. Memoization stores answers by state; bottom-up DP later chooses an order in which dependencies are already solved. Before any transition I say a sentence such as dp[i] = best answer for the first i items. Then I derive the transition, base cases, and evaluation order from that meaning. If states are never revisited, memoization may only add overhead.",
+      "follow_ups": ["What does dp[i] mean before you write code?", "How do you derive a bottom-up order?", "When is recursion without memoization enough?"]
+    },
+    {
+      "chapter": "20-1d-dp",
+      "thirty_second": "1D DP is appropriate when progress can be summarized by one principal index and each state depends on a bounded set of earlier states.",
+      "two_minute": "For climbing stairs, dp[i] means the number of ways to stand on step i; only dp[i-1] and dp[i-2] are needed. That state sentence makes the recurrence and base cases obvious. If only recent states are needed, memory can be compressed to O(1) while preserving the same invariant. If an additional independent dimension changes future choices, forcing it into 1D usually loses information.",
+      "follow_ups": ["When can you compress DP memory?", "How do you detect missing state information?", "Why is Fibonacci a teaching example but not a complete DP model?"]
+    },
+    {
+      "chapter": "21-2d-dp",
+      "thirty_second": "2D DP is useful when two independent coordinates jointly define a reusable subproblem, such as two prefixes or a grid position.",
+      "two_minute": "I state the meaning of both dimensions first. In a grid, dp[r][c] can mean paths to cell (r,c); in string alignment, dp[i][j] describes two prefixes. A cell may only use dependencies whose states are already final, which determines traversal order. The danger is adding dimensions without need: every dimension multiplies state count and memory.",
+      "follow_ups": ["How do you choose traversal order?", "What does dp[i][j] mean in a two-string problem?", "When can a 2D table be reduced to one row?"]
+    },
+    {
+      "chapter": "22-knapsack-dp",
+      "thirty_second": "Knapsack DP models limited resource capacity plus item decisions; loop direction encodes whether an item may be reused.",
+      "two_minute": "For 0/1 knapsack, dp[c] means the best value reachable with capacity c after processing some items. When processing one item, capacities iterate downward so the current item cannot feed a larger capacity again in the same iteration. Unbounded knapsack iterates upward because reuse is allowed. This is a good example of implementation order carrying semantic meaning.",
+      "follow_ups": ["Why does 0/1 capacity iterate backward?", "What changes for unbounded reuse?", "How do you reconstruct chosen items?"]
+    },
+    {
+      "chapter": "23-lis-dp",
+      "thirty_second": "LIS begins as a subsequence DP, and the optimized version stores the smallest possible tail for each subsequence length rather than the subsequence itself.",
+      "two_minute": "The simple O(n²) DP asks, for each i, what longest increasing subsequence ends at i. The O(n log n) version changes state: tails[len] is the minimum tail value achievable for an increasing subsequence of that length. Replacing a tail does not claim that tails itself is the final LIS; it preserves more extension options. Binary search works because tails is monotonic.",
+      "follow_ups": ["Why is the tails array not necessarily an actual LIS?", "Where does binary search become valid?", "When is O(n²) DP preferable for explanation or reconstruction?"]
+    },
+    {
+      "chapter": "24-monotonic-stack",
+      "thirty_second": "A monotonic stack keeps only unresolved candidates that a future element can still answer, discarding dominated candidates once their answer is known.",
+      "two_minute": "For next-greater problems, indices remain on a decreasing stack while they wait for a larger value. A new larger value resolves and pops smaller candidates. Each index is pushed once and popped once, so total work is O(n), despite the inner while loop. Direction and strict-vs-nonstrict comparison encode the exact question; changing them carelessly breaks duplicate handling.",
+      "follow_ups": ["Why is the total pop work linear?", "How do duplicates affect < versus <=?", "When do you need a monotonic queue instead?"]
+    },
+    {
+      "chapter": "25-monotonic-queue",
+      "thirty_second": "A monotonic queue is for a moving window that needs its current extremum; it maintains both index expiry order and value dominance.",
+      "two_minute": "For sliding maximum, indices leave the front when they fall outside the window, and smaller values leave the back because the newer larger value dominates them for every future window in which both coexist. The front is therefore the current maximum. Every index enters and leaves at most once, giving O(n). A heap can also support window maxima but needs stale-index cleanup and O(log n) operations.",
+      "follow_ups": ["Why store indices instead of values?", "Why can dominated values be discarded permanently?", "Compare this with a heap-based window maximum."]
+    },
+    {
+      "chapter": "26-trie",
+      "thirty_second": "A trie is useful when many string queries share prefixes and prefix structure itself is part of the requirement.",
+      "two_minute": "Each edge represents a character and a root-to-node path represents a prefix. Search cost depends primarily on query length rather than number of stored words. The trade is memory: many node objects and child maps can be expensive. For one exact lookup, a hash set is simpler; a trie earns its cost for prefix enumeration, autocomplete, or shared-prefix traversal.",
+      "follow_ups": ["Why can a HashSet beat a trie for exact lookup?", "What is the memory cost of sparse child maps?", "How would autocomplete traverse from a prefix node?"]
+    },
+    {
+      "chapter": "27-bit-manipulation",
+      "thirty_second": "Bit manipulation is valuable when independent boolean flags or bounded binary properties can be packed and updated with masks.",
+      "two_minute": "I name what each bit means before using operators. AND tests membership, OR adds flags, XOR toggles/detects parity-like differences, and x & (x-1) removes the lowest set bit. The benefit is compact constant-time state operations, but readability suffers if the bit semantics are not explicit. Width and signed behavior matter in fixed-width languages such as Java.",
+      "follow_ups": ["Explain x & (x-1).", "What changes for Java signed integers?", "When is a boolean array clearer than a bit mask?"]
+    },
+    {
+      "chapter": "28-bitmask-subsets",
+      "thirty_second": "Bitmask subset enumeration maps each of n small independent choices to one bit, so integers 0 through 2^n-1 represent every subset.",
+      "two_minute": "The pattern is appropriate only when n is small enough for exponential work. Bit i records whether item i is selected; iterating all masks enumerates all combinations without recursive state. It pairs well with DP when a subset itself is the state. In Java, 1 << n has width limits, so large n needs long masks or another representation—but usually the exponential runtime becomes the earlier limit anyway.",
+      "follow_ups": ["Why are there exactly 2^n masks?", "When is backtracking clearer than masks?", "What Java shift/width hazard appears for large n?"]
+    }
+  ]
+}

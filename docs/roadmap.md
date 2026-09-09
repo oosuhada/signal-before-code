@@ -1,48 +1,79 @@
-# Roadmap after v0.2
+# Roadmap — Feature Complete at v0.6
 
-v0.2 changes the repository contract: the textbook is intentionally complete before personal study.
-Future work should improve evidence and explanations rather than inflate topic count by default.
+The repository has reached the intended training-system boundary. New algorithm chapters or product
+features are no longer the default source of value; actual learner evidence is.
 
-## v0.2 — textbook complete, learner evidence empty
+## v0.2 — Complete Textbook
 
-- 28 intuition-first chapters complete;
-- constraint/complexity guides;
-- algorithm selection map;
-- neighboring-pattern comparisons;
-- wrong-turn library;
-- mutation atlas;
-- 168-problem curated roadmap with review-only answer metadata;
-- recognition quiz and flash drill;
-- personal attempt/revisit/mixed/mock templates;
-- CI that validates textbook and learner-layer separation.
+- 28 intuition-first chapters;
+- constraint and complexity guides;
+- selection map, comparisons, wrong turns, mutation ladders;
+- 168 curated practice problems;
+- textbook status separated from learner mastery.
 
-## v0.3 — personal evidence begins
+## v0.3 — See the Algorithm
 
-Only actual sessions can create these artifacts:
+- machine-readable trace schema;
+- 12 core visual algorithms plus 2D DP trace;
+- ASCII/Markdown state views;
+- `--step` and predict-before-reveal CLI modes;
+- wrong-state traces.
 
-- first-attempt logs;
-- hint-free results;
-- pattern-recognition failures;
-- implementation failures;
-- Day 3 / Day 14 / Day 30+ revisit results;
-- mixed-set classification scores;
-- timed mock reports.
+## v0.4 — Understand Its Boundaries
 
-No migration should mark historical catalog problems as solved merely because solution code exists in
-another repository. If old submission history is linked, it remains historical context until a
-`signal-before-code` evidence session explicitly records what was reconstructed.
+- 24 mutation chains;
+- 20 smallest-counterexample documents;
+- constraint and requirement mutation drills;
+- online/offline and static/dynamic comparisons;
+- 56 adversarial recognition prompts;
+- Break-My-Algorithm CLI.
 
-## Possible textbook extensions
+## v0.5 — Train and Measure Weaknesses
 
-Add only when the current 28 chapters expose a real gap:
+- actual-attempt recorder and expanded failure taxonomy;
+- confidence tracking and calibration;
+- explainable spaced-repetition scheduler;
+- due/weakest/unseen/recognition/implementation practice modes;
+- timed mock generation/review;
+- synthetic fixtures isolated from real progress.
 
-- 0-1 BFS;
-- Bellman-Ford / negative-edge shortest path;
-- minimum spanning tree / Kruskal;
-- Fenwick tree / segment tree;
-- strongly connected components;
-- advanced DAG DP;
-- meet-in-the-middle;
-- string matching.
+## v0.6 — Transfer to Interviews and Real Engineering
 
-These should enter as mutation-derived needs, not as a race toward a larger catalog.
+- 29 canonical Java implementations covering all 28 chapters;
+- Python→Java implementation-friction guide;
+- 28 oral defenses with 30-second, 2-minute, and deep follow-up modes;
+- random interview CLI;
+- code-less reasoning and whiteboard drills;
+- coding-test and debugging strategies;
+- verified applied case studies with “Why not another algorithm?” defenses.
+
+## After v0.6 — practice, do not manufacture mastery
+
+The valuable directories now are:
+
+```text
+attempts/
+revisits/
+mixed/
+mocks/
+progress/
+```
+
+Only real sessions may create claims such as:
+
+```text
+solved
+hint-free
+mastered
+interview passed
+```
+
+Do not mark catalog problems as mastered because a solution exists elsewhere or because the textbook
+contains the algorithm. When a genuine gap appears during practice, improve the smallest relevant
+explanation, trace, counterexample, or test rather than restarting a feature-expansion cycle.
+
+## Deferred topics
+
+Topics such as 0-1 BFS, Bellman-Ford, MST/Kruskal, Fenwick/segment trees, SCC, advanced DAG DP,
+meet-in-the-middle, or string matching remain mutation-derived extensions. Add one only when actual
+practice evidence shows the existing 28-chapter model cannot explain a recurring decision boundary.
