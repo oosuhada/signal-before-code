@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "signal-before-code attempt record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "problem_key",
+    "date",
+    "level",
+    "pattern_guess",
+    "pattern_correct",
+    "solved",
+    "used_hint",
+    "failure_mode",
+    "revisit_stage"
+  ],
+  "properties": {
+    "problem_key": { "type": "string", "minLength": 1 },
+    "date": { "type": "string", "format": "date" },
+    "level": {
+      "enum": ["Understand", "Recognize", "Apply", "Mixed", "Mock"]
+    },
+    "pattern_guess": { "type": "string" },
+    "pattern_correct": { "type": "boolean" },
+    "solved": { "type": "boolean" },
+    "used_hint": { "type": "boolean" },
+    "failure_mode": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "pattern_recognition",
+        "complexity",
+        "implementation",
+        "edge_case",
+        "explanation"
+      ]
+    },
+    "revisit_stage": {
+      "enum": ["day0", "day3", "day14", "day30plus"]
+    },
+    "attempt_log": {
+      "type": ["string", "null"]
+    },
+    "notes": {
+      "type": ["string", "null"]
+    }
+  }
+}

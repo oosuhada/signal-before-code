@@ -1,0 +1,408 @@
+{
+  "version": "0.1",
+  "copyright_note": "Only identifiers, links, original short abstracts, and selection questions are stored. Problem statements are not mirrored.",
+  "problems": [
+    {
+      "key": "leetcode-217",
+      "platform": "LeetCode",
+      "id": "217",
+      "title": "Contains Duplicate",
+      "url": "https://leetcode.com/problems/contains-duplicate/",
+      "pattern": "01-array-hash",
+      "level": "Understand",
+      "abstract": "Determine whether any value appears more than once in a collection.",
+      "selection_question": "What repeated membership work would a nested scan redo?"
+    },
+    {
+      "key": "leetcode-242",
+      "platform": "LeetCode",
+      "id": "242",
+      "title": "Valid Anagram",
+      "url": "https://leetcode.com/problems/valid-anagram/",
+      "pattern": "01-array-hash",
+      "level": "Understand",
+      "abstract": "Compare two strings by the multiplicity of their characters.",
+      "selection_question": "Should frequency state be a hash map or a bounded counting array?"
+    },
+    {
+      "key": "programmers-42576",
+      "platform": "Programmers",
+      "id": "42576",
+      "title": "완주하지 못한 선수",
+      "url": "https://school.programmers.co.kr/learn/courses/30/lessons/42576",
+      "pattern": "01-array-hash",
+      "level": "Recognize",
+      "abstract": "Find the unmatched participant when names may repeat.",
+      "selection_question": "What state preserves multiplicity instead of only membership?"
+    },
+    {
+      "key": "leetcode-49",
+      "platform": "LeetCode",
+      "id": "49",
+      "title": "Group Anagrams",
+      "url": "https://leetcode.com/problems/group-anagrams/",
+      "pattern": "01-array-hash",
+      "level": "Recognize",
+      "abstract": "Group words that share the same character multiset.",
+      "selection_question": "What canonical key turns equivalence testing into direct grouping?"
+    },
+    {
+      "key": "leetcode-347",
+      "platform": "LeetCode",
+      "id": "347",
+      "title": "Top K Frequent Elements",
+      "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+      "pattern": "01-array-hash",
+      "level": "Apply",
+      "abstract": "Return the k values with the highest observed frequencies.",
+      "selection_question": "After hashing solves counting, what separate top-k selection problem remains?"
+    },
+
+    {
+      "key": "leetcode-125",
+      "platform": "LeetCode",
+      "id": "125",
+      "title": "Valid Palindrome",
+      "url": "https://leetcode.com/problems/valid-palindrome/",
+      "pattern": "02-two-pointers",
+      "level": "Understand",
+      "abstract": "Check whether normalized characters match symmetrically from both ends.",
+      "selection_question": "What fact lets each boundary move inward permanently?"
+    },
+    {
+      "key": "leetcode-167",
+      "platform": "LeetCode",
+      "id": "167",
+      "title": "Two Sum II - Input Array Is Sorted",
+      "url": "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
+      "pattern": "02-two-pointers",
+      "level": "Understand",
+      "abstract": "Find a target-sum pair in an ascending array.",
+      "selection_question": "Why does too-small eliminate the current left boundary?"
+    },
+    {
+      "key": "leetcode-15",
+      "platform": "LeetCode",
+      "id": "15",
+      "title": "3Sum",
+      "url": "https://leetcode.com/problems/3sum/",
+      "pattern": "02-two-pointers",
+      "level": "Recognize",
+      "abstract": "Find unique triples satisfying a sum relation.",
+      "selection_question": "Which dimension can be fixed so the remainder becomes an ordered pair search?"
+    },
+    {
+      "key": "programmers-42885",
+      "platform": "Programmers",
+      "id": "42885",
+      "title": "구명보트",
+      "url": "https://school.programmers.co.kr/learn/courses/30/lessons/42885",
+      "pattern": "02-two-pointers",
+      "level": "Recognize",
+      "abstract": "Pair people under a capacity limit while minimizing the number of boats.",
+      "selection_question": "After sorting, which extreme-pair decision can be made without revisiting it?"
+    },
+    {
+      "key": "leetcode-11",
+      "platform": "LeetCode",
+      "id": "11",
+      "title": "Container With Most Water",
+      "url": "https://leetcode.com/problems/container-with-most-water/",
+      "pattern": "02-two-pointers",
+      "level": "Apply",
+      "abstract": "Choose two boundaries maximizing an area determined by width and the shorter height.",
+      "selection_question": "Which boundary can move without discarding a potentially better answer, and why?"
+    },
+
+    {
+      "key": "leetcode-643",
+      "platform": "LeetCode",
+      "id": "643",
+      "title": "Maximum Average Subarray I",
+      "url": "https://leetcode.com/problems/maximum-average-subarray-i/",
+      "pattern": "03-sliding-window",
+      "level": "Understand",
+      "abstract": "Evaluate every fixed-length contiguous segment and keep the best aggregate.",
+      "selection_question": "What can be removed and added when a fixed window moves one step?"
+    },
+    {
+      "key": "leetcode-3",
+      "platform": "LeetCode",
+      "id": "3",
+      "title": "Longest Substring Without Repeating Characters",
+      "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+      "pattern": "03-sliding-window",
+      "level": "Understand",
+      "abstract": "Find the longest contiguous region satisfying a uniqueness constraint.",
+      "selection_question": "What state makes the current interval valid, and when must its left edge move?"
+    },
+    {
+      "key": "leetcode-209",
+      "platform": "LeetCode",
+      "id": "209",
+      "title": "Minimum Size Subarray Sum",
+      "url": "https://leetcode.com/problems/minimum-size-subarray-sum/",
+      "pattern": "03-sliding-window",
+      "level": "Recognize",
+      "abstract": "With positive values, find the shortest contiguous region reaching a target sum.",
+      "selection_question": "Which positivity assumption makes expansion and shrinking monotonic?"
+    },
+    {
+      "key": "leetcode-424",
+      "platform": "LeetCode",
+      "id": "424",
+      "title": "Longest Repeating Character Replacement",
+      "url": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+      "pattern": "03-sliding-window",
+      "level": "Recognize",
+      "abstract": "Find the longest interval that can satisfy a uniform-character constraint after limited edits.",
+      "selection_question": "What summary of the window is sufficient to test validity?"
+    },
+    {
+      "key": "leetcode-239",
+      "platform": "LeetCode",
+      "id": "239",
+      "title": "Sliding Window Maximum",
+      "url": "https://leetcode.com/problems/sliding-window-maximum/",
+      "pattern": "03-sliding-window",
+      "level": "Apply",
+      "abstract": "Report the maximum for each moving fixed-size interval.",
+      "selection_question": "Why is a plain window insufficient, and what structure can maintain the extremum?"
+    },
+
+    {
+      "key": "leetcode-20",
+      "platform": "LeetCode",
+      "id": "20",
+      "title": "Valid Parentheses",
+      "url": "https://leetcode.com/problems/valid-parentheses/",
+      "pattern": "04-stack-queue",
+      "level": "Understand",
+      "abstract": "Validate nested delimiters whose most recent opening must close first.",
+      "selection_question": "Which unresolved item must be matched next?"
+    },
+    {
+      "key": "leetcode-232",
+      "platform": "LeetCode",
+      "id": "232",
+      "title": "Implement Queue using Stacks",
+      "url": "https://leetcode.com/problems/implement-queue-using-stacks/",
+      "pattern": "04-stack-queue",
+      "level": "Understand",
+      "abstract": "Recreate FIFO behavior using only LIFO primitives.",
+      "selection_question": "What ordering guarantee defines the target structure independently of its API?"
+    },
+    {
+      "key": "programmers-42586",
+      "platform": "Programmers",
+      "id": "42586",
+      "title": "기능개발",
+      "url": "https://school.programmers.co.kr/learn/courses/30/lessons/42586",
+      "pattern": "04-stack-queue",
+      "level": "Recognize",
+      "abstract": "Release completed work in dependency-preserving arrival order and count release batches.",
+      "selection_question": "Why can later-ready work still be blocked by the oldest unresolved item?"
+    },
+    {
+      "key": "leetcode-739",
+      "platform": "LeetCode",
+      "id": "739",
+      "title": "Daily Temperatures",
+      "url": "https://leetcode.com/problems/daily-temperatures/",
+      "pattern": "04-stack-queue",
+      "level": "Recognize",
+      "abstract": "For each position, find when a later value first exceeds it.",
+      "selection_question": "Which unresolved indices can be discharged when a larger value arrives?"
+    },
+    {
+      "key": "leetcode-84",
+      "platform": "LeetCode",
+      "id": "84",
+      "title": "Largest Rectangle in Histogram",
+      "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "pattern": "04-stack-queue",
+      "level": "Apply",
+      "abstract": "Compute the best rectangle supported by consecutive histogram bars.",
+      "selection_question": "What monotonic stack invariant tells you when a bar's maximal span is known?"
+    },
+
+    {
+      "key": "leetcode-704",
+      "platform": "LeetCode",
+      "id": "704",
+      "title": "Binary Search",
+      "url": "https://leetcode.com/problems/binary-search/",
+      "pattern": "05-binary-search",
+      "level": "Understand",
+      "abstract": "Locate a target in sorted data by eliminating impossible halves.",
+      "selection_question": "Which comparison proves an entire half cannot contain the target?"
+    },
+    {
+      "key": "baekjoon-1920",
+      "platform": "Baekjoon",
+      "id": "1920",
+      "title": "수 찾기",
+      "url": "https://www.acmicpc.net/problem/1920",
+      "pattern": "05-binary-search",
+      "level": "Understand",
+      "abstract": "Answer multiple exact-membership queries over a set of integers.",
+      "selection_question": "Should preprocessing favor sorted search or hashing for this query workload?"
+    },
+    {
+      "key": "leetcode-35",
+      "platform": "LeetCode",
+      "id": "35",
+      "title": "Search Insert Position",
+      "url": "https://leetcode.com/problems/search-insert-position/",
+      "pattern": "05-binary-search",
+      "level": "Recognize",
+      "abstract": "Find the boundary where a value belongs in ascending data.",
+      "selection_question": "Which boundary condition are you really searching for rather than a specific value?"
+    },
+    {
+      "key": "leetcode-875",
+      "platform": "LeetCode",
+      "id": "875",
+      "title": "Koko Eating Bananas",
+      "url": "https://leetcode.com/problems/koko-eating-bananas/",
+      "pattern": "05-binary-search",
+      "level": "Recognize",
+      "abstract": "Find the smallest rate that satisfies a deadline-like feasibility condition.",
+      "selection_question": "How does feasibility change as the candidate rate increases?"
+    },
+    {
+      "key": "leetcode-33",
+      "platform": "LeetCode",
+      "id": "33",
+      "title": "Search in Rotated Sorted Array",
+      "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+      "pattern": "05-binary-search",
+      "level": "Apply",
+      "abstract": "Search data that is sorted except for one rotation boundary.",
+      "selection_question": "What ordered half still survives every comparison despite the rotation?"
+    },
+
+    {
+      "key": "leetcode-703",
+      "platform": "LeetCode",
+      "id": "703",
+      "title": "Kth Largest Element in a Stream",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
+      "pattern": "06-heap-priority-queue",
+      "level": "Understand",
+      "abstract": "Maintain a kth-order statistic while new values arrive.",
+      "selection_question": "Which part of the stream must stay ordered, and how much of it is actually needed?"
+    },
+    {
+      "key": "leetcode-215",
+      "platform": "LeetCode",
+      "id": "215",
+      "title": "Kth Largest Element in an Array",
+      "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+      "pattern": "06-heap-priority-queue",
+      "level": "Understand",
+      "abstract": "Select one order statistic without necessarily fully sorting the input.",
+      "selection_question": "Do you need all values sorted, repeated extrema, or only one kth result?"
+    },
+    {
+      "key": "programmers-42626",
+      "platform": "Programmers",
+      "id": "42626",
+      "title": "더 맵게",
+      "url": "https://school.programmers.co.kr/learn/courses/30/lessons/42626",
+      "pattern": "06-heap-priority-queue",
+      "level": "Recognize",
+      "abstract": "Repeatedly combine the smallest values until a threshold condition is met.",
+      "selection_question": "What operation repeats after every mutation of the candidate set?"
+    },
+    {
+      "key": "leetcode-973",
+      "platform": "LeetCode",
+      "id": "973",
+      "title": "K Closest Points to Origin",
+      "url": "https://leetcode.com/problems/k-closest-points-to-origin/",
+      "pattern": "06-heap-priority-queue",
+      "level": "Recognize",
+      "abstract": "Select a small closest subset from many scored points.",
+      "selection_question": "When is keeping only k candidates better than sorting every point?"
+    },
+    {
+      "key": "leetcode-23",
+      "platform": "LeetCode",
+      "id": "23",
+      "title": "Merge k Sorted Lists",
+      "url": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "pattern": "06-heap-priority-queue",
+      "level": "Apply",
+      "abstract": "Merge many already-sorted sequences by repeatedly choosing the smallest current head.",
+      "selection_question": "Why is the candidate set only the current heads rather than every remaining value?"
+    },
+
+    {
+      "key": "leetcode-733",
+      "platform": "LeetCode",
+      "id": "733",
+      "title": "Flood Fill",
+      "url": "https://leetcode.com/problems/flood-fill/",
+      "pattern": "07-bfs-dfs",
+      "level": "Understand",
+      "abstract": "Traverse the connected region reachable through matching neighboring cells.",
+      "selection_question": "What implicit graph is present even though there is no adjacency list?"
+    },
+    {
+      "key": "programmers-43165",
+      "platform": "Programmers",
+      "id": "43165",
+      "title": "타겟 넘버",
+      "url": "https://school.programmers.co.kr/learn/courses/30/lessons/43165",
+      "pattern": "07-bfs-dfs",
+      "level": "Understand",
+      "abstract": "Explore a binary choice tree of signed decisions and count target outcomes.",
+      "selection_question": "What state belongs in one depth-first choice frame?"
+    },
+    {
+      "key": "leetcode-200",
+      "platform": "LeetCode",
+      "id": "200",
+      "title": "Number of Islands",
+      "url": "https://leetcode.com/problems/number-of-islands/",
+      "pattern": "07-bfs-dfs",
+      "level": "Recognize",
+      "abstract": "Count connected components in a binary grid.",
+      "selection_question": "What must one traversal consume completely before the component count increases?"
+    },
+    {
+      "key": "programmers-43162",
+      "platform": "Programmers",
+      "id": "43162",
+      "title": "네트워크",
+      "url": "https://school.programmers.co.kr/learn/courses/30/lessons/43162",
+      "pattern": "07-bfs-dfs",
+      "level": "Recognize",
+      "abstract": "Count connectivity groups from pairwise connection information.",
+      "selection_question": "Which visited-state invariant prevents recounting a component?"
+    },
+    {
+      "key": "leetcode-994",
+      "platform": "LeetCode",
+      "id": "994",
+      "title": "Rotting Oranges",
+      "url": "https://leetcode.com/problems/rotting-oranges/",
+      "pattern": "07-bfs-dfs",
+      "level": "Apply",
+      "abstract": "Simulate equal-time spreading from multiple initial sources across a grid.",
+      "selection_question": "Why must all initial sources share distance/time zero in one frontier?"
+    },
+    {
+      "key": "leetcode-1091",
+      "platform": "LeetCode",
+      "id": "1091",
+      "title": "Shortest Path in Binary Matrix",
+      "url": "https://leetcode.com/problems/shortest-path-in-binary-matrix/",
+      "pattern": "07-bfs-dfs",
+      "level": "Apply",
+      "abstract": "Find the minimum number of equal-cost grid moves from one corner to another.",
+      "selection_question": "Which equal-cost assumption makes frontier layers equal path length?"
+    }
+  ]
+}
