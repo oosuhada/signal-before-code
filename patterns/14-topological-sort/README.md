@@ -110,6 +110,12 @@ need longest DAG path       → topo order + DP
 undirected dependencies     → rethink model
 ```
 
+## Visual Trace / Try Predicting
+
+Watch prerequisites disappear in
+[`../../visuals/topological-sort.md`](../../visuals/topological-sort.md), then predict which node enters
+the ready queue next.
+
 ## 14. Practice ladder
 
 - **Understand:** course schedule feasibility/order.

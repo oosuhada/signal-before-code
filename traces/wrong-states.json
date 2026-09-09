@@ -1,0 +1,59 @@
+{
+  "traces": [
+    {
+      "id": "bfs-visited-too-late",
+      "claim": "Marking visited only when dequeuing is harmless.",
+      "steps": [
+        "A enqueues B and C",
+        "B enqueues D but D is not marked yet",
+        "C also enqueues D",
+        "queue now contains duplicate D entries"
+      ],
+      "broken_invariant": "A discovered node should enter the BFS frontier at most once when one shortest parent is enough."
+    },
+    {
+      "id": "stale-heap-entry",
+      "claim": "Every priority-queue entry is still the current best priority.",
+      "steps": [
+        "push (10, X)",
+        "discover better X and push (4, X)",
+        "pop (4, X) and finalize it",
+        "old (10, X) remains and must be recognized as stale"
+      ],
+      "broken_invariant": "The heap may contain historical entries; only the best-known distance is authoritative."
+    },
+    {
+      "id": "sliding-window-negative",
+      "claim": "If a window sum is too large, moving left rightward always moves toward validity without losing future answers.",
+      "steps": [
+        "window [4, -3, 5] has sum 6",
+        "removing 4 leaves [-3, 5] with sum 2",
+        "but negative values make window sum non-monotonic as boundaries move",
+        "a locally invalid/valid decision no longer proves discarded starts are useless"
+      ],
+      "broken_invariant": "Boundary movement does not monotonically repair the sum condition when values can be negative."
+    },
+    {
+      "id": "dijkstra-negative-edge",
+      "claim": "The smallest tentative distance is always final.",
+      "steps": [
+        "A→B costs 2, A→C costs 5",
+        "B appears final at distance 2",
+        "C→B has weight -10",
+        "route A→C→B later improves B to -5"
+      ],
+      "broken_invariant": "Nonnegative edges are required for the finalized-minimum argument."
+    },
+    {
+      "id": "binary-search-no-monotonicity",
+      "claim": "Any yes/no predicate can be binary searched.",
+      "steps": [
+        "predicate over indices is F,T,F,T,F",
+        "checking the middle F gives no safe half to remove",
+        "either side can still contain T",
+        "halving would discard possible answers without proof"
+      ],
+      "broken_invariant": "A binary-search decision needs a monotonic partition or sorted ordering."
+    }
+  ]
+}

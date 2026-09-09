@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "signal-before-code visual trace",
+  "type": "object",
+  "required": ["algorithm", "input", "goal", "steps"],
+  "properties": {
+    "algorithm": { "type": "string", "minLength": 1 },
+    "input": { "type": "object" },
+    "goal": { "type": "string", "minLength": 1 },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["step", "state", "decision", "invariant", "visual", "prompt"],
+        "properties": {
+          "step": { "type": "integer", "minimum": 0 },
+          "state": { "type": "object" },
+          "decision": { "type": "string" },
+          "invariant": { "type": "string" },
+          "eliminated": { "type": "string" },
+          "visual": { "type": "string" },
+          "prompt": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

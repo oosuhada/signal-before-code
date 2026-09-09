@@ -102,6 +102,11 @@ negative edge              → choose another shortest-path method
 DAG with weights           → topo order + relaxation candidate
 ```
 
+## Visual Trace / Try Predicting
+
+Separate tentative from finalized distance in [`../../visuals/dijkstra.md`](../../visuals/dijkstra.md),
+then compare the negative-edge wrong-state trace.
+
 ## 14. Practice ladder
 
 - **Understand:** network delay / weighted source distances.

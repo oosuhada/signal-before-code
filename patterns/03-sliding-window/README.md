@@ -102,6 +102,11 @@ allow negative numbers          → ordinary sum window may fail
 window maximum                  → monotonic queue
 ```
 
+## Visual Trace / Try Predicting
+
+See the window invariant in [`../../visuals/sliding-window.md`](../../visuals/sliding-window.md), then
+compare it with the negative-value wrong-state trace using `scripts/trace.py`.
+
 ## 14. Practice ladder
 
 - **Understand:** fixed-size averages, longest unique substring.

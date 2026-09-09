@@ -101,6 +101,11 @@ predicate loses monotonicity       → binary search invalid
 pair sum in sorted array           → two pointers often simpler
 ```
 
+## Visual Trace / Try Predicting
+
+See the shrinking search-space invariant in [`../../visuals/binary-search.md`](../../visuals/binary-search.md)
+and run `python3 scripts/trace.py binary-search --predict`.
+
 ## 14. Practice ladder
 
 - **Understand:** exact search and lower bound.

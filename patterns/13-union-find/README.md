@@ -107,6 +107,11 @@ directed edges                 → DSU no longer answers reachability
 edge deletions                 → ordinary DSU boundary reached
 ```
 
+## Visual Trace / Try Predicting
+
+Follow changing component representatives in
+[`../../visuals/union-find.md`](../../visuals/union-find.md) before memorizing path compression code.
+
 ## 14. Practice ladder
 
 - **Understand:** basic set merge/connectivity.

@@ -111,6 +111,11 @@ negative edge                 → Dijkstra guarantee disappears
 need dependency order         → topological sort
 ```
 
+## Visual Trace / Try Predicting
+
+Compare the FIFO frontier in [`../../visuals/bfs.md`](../../visuals/bfs.md) with the LIFO branch state
+in [`../../visuals/dfs.md`](../../visuals/dfs.md). Both can be stepped interactively.
+
 ## 14. Practice ladder
 
 - **Understand:** flood fill, connected components.

@@ -104,6 +104,11 @@ longest valid substring  → sliding-window form of two moving boundaries
 minimum feasible value   → binary search on answer
 ```
 
+## Visual Trace / Try Predicting
+
+See the boundary-elimination state in [`../../visuals/two-pointers.md`](../../visuals/two-pointers.md),
+then run `python3 scripts/trace.py two-pointers --predict` from the repository root.
+
 ## 14. Practice ladder
 
 - **Understand:** sorted pair sum, palindrome.

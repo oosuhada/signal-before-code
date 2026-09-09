@@ -155,6 +155,27 @@ after a classification attempt.
 
 Problem statements from Baekjoon, Programmers, and LeetCode are not copied into this repository.
 
+## See the algorithm move
+
+The visual layer turns the same reasoning into explicit state transitions without adding a frontend.
+Start at [`visuals/README.md`](visuals/README.md) or run a trace directly:
+
+```bash
+python3 scripts/trace.py binary-search
+python3 scripts/trace.py bfs --step
+python3 scripts/trace.py dijkstra --predict
+python3 scripts/trace.py dp-grid
+```
+
+`--predict` is the preferred mode after the first walkthrough. It shows current state + invariant,
+hides the transition, and asks what should happen next before reveal. Machine-readable traces use
+[`traces/schema.json`](traces/schema.json); wrong-state traces live in
+[`traces/wrong-states.json`](traces/wrong-states.json).
+
+The visualized set focuses on algorithms where state movement carries the proof: Two Pointers,
+Sliding Window, Binary Search, Heap, BFS, DFS, Union-Find, Topological Sort, Dijkstra, DP,
+Monotonic Stack, and Backtracking.
+
 ## Personal learning loop
 
 The textbook is ready in advance. Evidence is earned later:

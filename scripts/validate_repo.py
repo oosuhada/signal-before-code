@@ -6,11 +6,15 @@ from __future__ import annotations
 import csv
 import json
 import re
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from signal_before_code.tracing import TRACE_BUILDERS, build_trace  # noqa: E402
 
 REQUIRED_CHAPTER_HEADINGS = [
     "## 1. What problem shape does this solve?",
@@ -38,6 +42,21 @@ EXPECTED_HOSTS = {
 }
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 PYTHON_FENCE = re.compile(r"```python\n(.*?)```", re.DOTALL)
+
+REQUIRED_TRACES = {
+    "two-pointers",
+    "sliding-window",
+    "binary-search",
+    "heap",
+    "bfs",
+    "dfs",
+    "union-find",
+    "topological-sort",
+    "dijkstra",
+    "dp",
+    "monotonic-stack",
+    "backtracking",
+}
 
 
 def read_json(relative: str, errors: list[str]) -> dict[str, object] | None:
@@ -311,6 +330,32 @@ def validate_personal_templates(errors: list[str]) -> None:
             errors.append(f"missing personal learning template: {relative}")
 
 
+def validate_visual_traces(errors: list[str]) -> None:
+    missing = REQUIRED_TRACES - TRACE_BUILDERS.keys()
+    if missing:
+        errors.append(f"missing required visual traces: {sorted(missing)}")
+    for name in sorted(REQUIRED_TRACES & TRACE_BUILDERS.keys()):
+        trace = build_trace(name)
+        if trace.get("algorithm") != name:
+            errors.append(f"trace {name}: algorithm field mismatch")
+        steps = trace.get("steps")
+        if not isinstance(steps, list) or not steps:
+            errors.append(f"trace {name}: steps must be a non-empty list")
+            continue
+        for index, step in enumerate(steps):
+            if step.get("step") != index:
+                errors.append(f"trace {name}: expected step number {index}")
+            for field in ["state", "decision", "invariant", "visual", "prompt"]:
+                if not step.get(field):
+                    errors.append(f"trace {name} step {index}: missing {field}")
+
+    wrong = read_json("traces/wrong-states.json", errors)
+    if wrong is not None:
+        traces = wrong.get("traces")
+        if not isinstance(traces, list) or len(traces) < 5:
+            errors.append("traces/wrong-states.json must contain at least 5 wrong-state traces")
+
+
 def validate_local_markdown_links(errors: list[str]) -> None:
     for markdown in ROOT.rglob("*.md"):
         if ".git" in markdown.parts:
@@ -343,6 +388,7 @@ def main() -> int:
     read_json("progress/schema.json", errors)
     validate_revisit_csv(errors)
     validate_personal_templates(errors)
+    validate_visual_traces(errors)
     validate_local_markdown_links(errors)
 
     if errors:
@@ -356,6 +402,7 @@ def main() -> int:
         f"{len(chapters)} textbook-complete chapters, "
         f"{problem_count} curated problems, "
         f"{python_fences} chapter Python examples compiled, "
+        f"{len(REQUIRED_TRACES)} core visual traces, "
         "learner evidence contract and local links OK."
     )
     return 0

@@ -96,6 +96,11 @@ top K from stream           → size-K heap
 priority values mutate      → lazy entries + stale check / redesign
 ```
 
+## Visual Trace / Try Predicting
+
+See root repair and partial ordering in [`../../visuals/heap.md`](../../visuals/heap.md), then inspect
+the stale-entry wrong-state trace.
+
 ## 14. Practice ladder
 
 - **Understand:** kth largest, last-stone style selection.

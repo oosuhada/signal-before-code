@@ -108,6 +108,11 @@ N around 20 subsets    → bitmask may simplify
 strong prefix rules    → pruning becomes central
 ```
 
+## Visual Trace / Try Predicting
+
+See choose → explore → undo as explicit state in
+[`../../visuals/backtracking.md`](../../visuals/backtracking.md), then run the predict mode.
+
 ## 14. Practice ladder
 
 - **Understand:** subsets, permutations, combinations.

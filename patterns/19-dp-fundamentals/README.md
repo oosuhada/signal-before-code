@@ -124,6 +124,11 @@ only previous two states needed    → rolling-space optimization
 local choice proven safe           → greedy may replace DP
 ```
 
+## Visual Trace / Try Predicting
+
+Start from state meaning in [`../../visuals/dp.md`](../../visuals/dp.md). The CLI includes both a 1D
+Fibonacci trace and a small 2D grid fill.
+
 ## 14. Practice ladder
 
 - **Understand:** climb stairs / house-style one-dimensional recurrence.

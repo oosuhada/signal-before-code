@@ -98,6 +98,11 @@ window max for each K    → monotonic queue
 global maximum only      → simple scan
 ```
 
+## Visual Trace / Try Predicting
+
+See why resolved candidates leave permanently in
+[`../../visuals/monotonic-stack.md`](../../visuals/monotonic-stack.md).
+
 ## 14. Practice ladder
 
 - **Understand:** next greater element, daily temperatures.
